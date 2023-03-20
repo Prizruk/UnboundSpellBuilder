@@ -1,10 +1,10 @@
 ﻿[
   {
+    "description": "Deals alot of damage",
     "name": "Damage",
     "help": "Deals damage",
     "school": "Destruction",
     "level": 0,
-    "cost": 2,
-    "effect": ""
+    "cost": 2
   }
 ]
