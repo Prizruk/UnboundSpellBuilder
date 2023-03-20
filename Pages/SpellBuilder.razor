@@ -1,18 +1,118 @@
 @page "/spellbuilder"
+@inject HttpClient Http
 
 <PageTitle>Spell Builder</PageTitle>
 
+@{
+    var showChoice = isChoosing ? "d-block" : "d-none";
+    var showInfo = isChoosing ? "d-none" : "d-block";
+}
+
 <h1>Spell Builder</h1>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
+<div style=@showChoice id="spellChoice">
+    @foreach(var effect in effects)
     {
-        currentCount++;
+        <button class="btn btn-primary" @onclick="AddEffect(@effect)">@effect.name</button>
     }
+</div><br>
+<div style=@showChoice id="spellInfo">
+    @if(loadingFinished == false)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Character Stats</th>
+                    <th>Spell Options</th>
+                    <th>Spell Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>
+                        MAG: <input type="text" name="MAG" maxlength="2" size="4" value="10"><br>
+                        THM: <input type="text" name="THM" maxlength="2" size="4" value="10"><br>
+                        <b>Talents:</b>
+                        <input type="checkbox" name="hasDestructive" >Destructive Spells<br>
+                    </th>
+                    <th>
+                        @foreach (var effect in effects)
+                        {
+                            @effect.name<br>
+                        }
+                        <button class="btn btn-primary" @onclick="ToggleAddingEffects">Add Spell Effect</button>
+                    </th>
+                    <th>
+                        <b>School:</b> @spell.school<br>
+                        <b>Level:</b> @spell.level<br>
+                        <b>Spellpoints:</b> @spell.pointcost<br>
+                        <b>Mana:</b> @spell.manacost<br>
+                        <b>Cast DC:</b> @spell.castDC<br>
+                        <hr>
+                        @spell.effect
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    }
+</div>
+
+@code 
+{
+    private EffectKeyword[]? effects;
+    private Spell spell;
+    public bool loadingFinished = false;
+    public bool isChoosing = false;
+
+    public class Spell
+    {
+        public string school = "?";
+        public int level = 0;
+        public int pointcost = 0;
+        public int manacost = 0;
+        public int castDC = 10;
+        public string effect = "?";
+        public EffectKeyword[]? effects = null;
+    }
+
+    public class Keyword
+    {
+        public string name { get; set; }
+        public string help { get; set; }
+        public string school { get; set; }
+        public int level { get; set; }
+        public int cost { get; set; }
+    }
+
+    public class EffectKeyword : Keyword
+    {
+        public string effect { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        effects = await Http.GetFromJsonAsync<EffectKeyword[]>("sample-data/effects.json");
+        loadingFinished = true;
+    }
+
+    private void AddEffect(EffectKeyword effect)
+    {
+        spell.effects.Append(effect);
+        spell.effect = effect.effect;
+        spell.level = effect.level;
+        spell.pointcost = effect.cost;
+        spell.manacost = 5*effect.level;
+        spell.school = effect.school;
+        isChoosing = false;
+    }
+
+    private void ToggleAddingEffects()
+    {
+        isChoosing = true;
+    }
+
 }
