@@ -20,7 +20,7 @@ jobs:
       run: dotnet publish -c Release -o release --nologo
     # changes the base-tag in index.html from '/' to 'UnboundSpellBuilder' to match subdirectory
     - name: Change base tag in index.html from / to UnboundSpellBuilder
-      run: sed -i 's/<base href="\/" \/>/<base href="\/UnboundSpellBuilder\/" \/>/g' release/wwwrooot/index.html
+      run: sed -i 's/<base href="\/" \/>/<base href="\/UnboundSpellBuilder\/" \/>/g' release/wwwroot/index.html
     # copy index.html to 404.html
     - name: copy index to 404
       run: cp release/wwwroot/index.html release/wwwroot/404.html
