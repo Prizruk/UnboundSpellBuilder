@@ -1,19 +1,19 @@
 /* /Shared/MainLayout.razor.rz.scp.css */
-.page[b-mmtkhc7qga] {
+.page[b-j6vyyuzhci] {
     position: relative;
     display: flex;
     flex-direction: column;
 }
 
-main[b-mmtkhc7qga] {
+main[b-j6vyyuzhci] {
     flex: 1;
 }
 
-.sidebar[b-mmtkhc7qga] {
+.sidebar[b-j6vyyuzhci] {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
 
-.top-row[b-mmtkhc7qga] {
+.top-row[b-j6vyyuzhci] {
     background-color: #f7f7f7;
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
@@ -22,99 +22,99 @@ main[b-mmtkhc7qga] {
     align-items: center;
 }
 
-    .top-row[b-mmtkhc7qga]  a, .top-row[b-mmtkhc7qga]  .btn-link {
+    .top-row[b-j6vyyuzhci]  a, .top-row[b-j6vyyuzhci]  .btn-link {
         white-space: nowrap;
         margin-left: 1.5rem;
         text-decoration: none;
     }
 
-    .top-row[b-mmtkhc7qga]  a:hover, .top-row[b-mmtkhc7qga]  .btn-link:hover {
+    .top-row[b-j6vyyuzhci]  a:hover, .top-row[b-j6vyyuzhci]  .btn-link:hover {
         text-decoration: underline;
     }
 
-    .top-row[b-mmtkhc7qga]  a:first-child {
+    .top-row[b-j6vyyuzhci]  a:first-child {
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
 @media (max-width: 640.98px) {
-    .top-row:not(.auth)[b-mmtkhc7qga] {
+    .top-row:not(.auth)[b-j6vyyuzhci] {
         display: none;
     }
 
-    .top-row.auth[b-mmtkhc7qga] {
+    .top-row.auth[b-j6vyyuzhci] {
         justify-content: space-between;
     }
 
-    .top-row[b-mmtkhc7qga]  a, .top-row[b-mmtkhc7qga]  .btn-link {
+    .top-row[b-j6vyyuzhci]  a, .top-row[b-j6vyyuzhci]  .btn-link {
         margin-left: 0;
     }
 }
 
 @media (min-width: 641px) {
-    .page[b-mmtkhc7qga] {
+    .page[b-j6vyyuzhci] {
         flex-direction: row;
     }
 
-    .sidebar[b-mmtkhc7qga] {
+    .sidebar[b-j6vyyuzhci] {
         width: 250px;
         height: 100vh;
         position: sticky;
         top: 0;
     }
 
-    .top-row[b-mmtkhc7qga] {
+    .top-row[b-j6vyyuzhci] {
         position: sticky;
         top: 0;
         z-index: 1;
     }
 
-    .top-row.auth[b-mmtkhc7qga]  a:first-child {
+    .top-row.auth[b-j6vyyuzhci]  a:first-child {
         flex: 1;
         text-align: right;
         width: 0;
     }
 
-    .top-row[b-mmtkhc7qga], article[b-mmtkhc7qga] {
+    .top-row[b-j6vyyuzhci], article[b-j6vyyuzhci] {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
 }
 /* /Shared/NavMenu.razor.rz.scp.css */
-.navbar-toggler[b-9yppp0kxts] {
+.navbar-toggler[b-vx894qn1ey] {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-.top-row[b-9yppp0kxts] {
+.top-row[b-vx894qn1ey] {
     height: 3.5rem;
     background-color: rgba(0,0,0,0.4);
 }
 
-.navbar-brand[b-9yppp0kxts] {
+.navbar-brand[b-vx894qn1ey] {
     font-size: 1.1rem;
 }
 
-.oi[b-9yppp0kxts] {
+.oi[b-vx894qn1ey] {
     width: 2rem;
     font-size: 1.1rem;
     vertical-align: text-top;
     top: -2px;
 }
 
-.nav-item[b-9yppp0kxts] {
+.nav-item[b-vx894qn1ey] {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
 }
 
-    .nav-item:first-of-type[b-9yppp0kxts] {
+    .nav-item:first-of-type[b-vx894qn1ey] {
         padding-top: 1rem;
     }
 
-    .nav-item:last-of-type[b-9yppp0kxts] {
+    .nav-item:last-of-type[b-vx894qn1ey] {
         padding-bottom: 1rem;
     }
 
-    .nav-item[b-9yppp0kxts]  a {
+    .nav-item[b-vx894qn1ey]  a {
         color: #d7d7d7;
         border-radius: 4px;
         height: 3rem;
@@ -123,27 +123,27 @@ main[b-mmtkhc7qga] {
         line-height: 3rem;
     }
 
-.nav-item[b-9yppp0kxts]  a.active {
+.nav-item[b-vx894qn1ey]  a.active {
     background-color: rgba(255,255,255,0.25);
     color: white;
 }
 
-.nav-item[b-9yppp0kxts]  a:hover {
+.nav-item[b-vx894qn1ey]  a:hover {
     background-color: rgba(255,255,255,0.1);
     color: white;
 }
 
 @media (min-width: 641px) {
-    .navbar-toggler[b-9yppp0kxts] {
+    .navbar-toggler[b-vx894qn1ey] {
         display: none;
     }
 
-    .collapse[b-9yppp0kxts] {
+    .collapse[b-vx894qn1ey] {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
     
-    .nav-scrollable[b-9yppp0kxts] {
+    .nav-scrollable[b-vx894qn1ey] {
         /* Allow sidebar to scroll for tall menus */
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
