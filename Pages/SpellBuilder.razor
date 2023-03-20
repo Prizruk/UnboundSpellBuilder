@@ -13,7 +13,7 @@
 <div style=@showChoice id="spellChoice">
     @foreach(var effect in effects)
     {
-        <button class="btn btn-primary" @onclick="AddEffect(@effect)">@effect.name</button>
+        <button class="btn btn-primary" @onclick="AddEffect(effect)">@effect.name</button>
     }
 </div><br>
 <div style=@showChoice id="spellInfo">
