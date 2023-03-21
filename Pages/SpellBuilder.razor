@@ -36,12 +36,25 @@
             <tbody>
                 <tr>
                     <td>
-                        MAG: <input type="text" name="MAG" maxlength="2" size="4" value="10"><br>
-                        THM: <input type="text" name="THM" maxlength="2" size="4" value="10"><br>
-                        <b>Talents:</b><br>
-                        <input type="checkbox" name="hasDestructive" >Destructive Spells<br>
+                        <table align="left">
+                            <tbody>
+                            <tr>
+                                <td>MAG:</td><td><input type="number" name="MAG" maxlength="2" size="4" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
+                            </tr>
+                            <tr>
+                                <td>THM:</td><td><input type="number" name="THM" maxlength="2" size="4" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
+                            </tr>
+                            </tbody>
+                        </table><br>           
+                        <table align="left">
+                            <tr><th></th><th>Talents:</th></tr>
+                            <tr>
+                                <td><input type="checkbox" name="destructiveCheck" bind="@hasDestructive"></td><td>Destructive Spells</td>
+                            </tr>
+                        </table>
                     </td>
                     <td>
+                        EMM bonus: <input type="number" name="EMMB" maxlength="2" size="4" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"><br><hr>
                         @if(spell.effects != null){
                             @foreach (var effect in spell.effects)
                             {
@@ -71,6 +84,10 @@
     private Spell spell = new Spell();
     [Parameter]
     public bool isChoosing { get; set; }
+    public bool hasDestructive { get; set; }
+    public int MAGvalue { get; set;} = 10;
+    public int THMvalue { get; set;} = 10;
+    public int EMMB{ get; set;} = 0;
 
     public class Spell
     {
@@ -156,18 +173,38 @@
         {
             spell.effects.Append(newEffect);
         }
-        spell.effect = newEffect.description;
-        spell.level = newEffect.level;
-        spell.pointcost = newEffect.cost;
-        spell.manacost = 5*newEffect.level;
-        spell.school = newEffect.school;
-        spell.castDC = 10+4*newEffect.level;
+        UpdateSpellInfo();
         isChoosing = false;
     }
 
     private async Task ToggleAddingEffects(MouseEventArgs e)
     {
         isChoosing = true;
+    }
+
+    private async Task UpdateParams(string value, int type)
+    {
+        int newValue = System.Convert.ToInt32(value);
+        switch(type)
+        {
+            case 1: MAGvalue = newValue; break;
+            case 2: THMvalue = newValue; break;
+            case 3: EMMB = newValue; break;
+            default: return;
+        }
+        UpdateSpellInfo();
+    }
+
+    private async Task UpdateSpellInfo()
+    {   
+        spell.level = spell.effects[0].level;
+        spell.pointcost = spell.effects[0].cost;
+        spell.manacost = 5*spell.effects[0].level;
+        spell.school = spell.effects[0].school;
+        spell.castDC = 10+4*spell.effects[0].level;
+        spell.effect = spell.effects[0].description;        
+        if (spell.effect.Contains("%%EMM%%")) spell.effect = spell.effect.Replace("%%EMM%%",((MAGvalue-10)/2+EMMB).ToString());
+        InvokeAsync(StateHasChanged);
     }
 
 }
