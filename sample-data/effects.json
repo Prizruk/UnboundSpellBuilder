@@ -1,6 +1,6 @@
 ﻿[
   {
-    "description": "Deals alot of damage",
+    "description": "Deals 2d8 + %%EMM%% of damage",
     "name": "Damage",
     "help": "Deals damage",
     "school": "Destruction",
