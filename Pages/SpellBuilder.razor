@@ -198,7 +198,7 @@
         string[]? forMult = orig.Substring(startMult,endMult-startMult).Replace("%mult%","").Replace("%/mult%","").Split(";");
         int answer = 1;
         foreach(string mult in forMult)
-            answer *= System.Convert.ToInt32(mult);
+            answer *= Math.Max(System.Convert.ToInt32(mult),1);
         orig = orig.Remove(startMult, endMult - startMult).Replace("%/mult%","").Insert(startMult,answer.ToString());
         return orig;
     }
