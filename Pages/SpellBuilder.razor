@@ -14,9 +14,15 @@
     @if (effects != null){
         @foreach(var effect in effects)
         {
-            <button class="btn btn-primary" @onclick="(args)=> AddEffect(args, effect.name)">@effect.name</button>
+            @if(!effect.unique || spellHasEffect(effect) == -1)
+            {
+                <button class="btn btn-primary" @onclick="(args)=> AddEffect(args, effect.name)"><Tooltip Text=@effect.help>@effect.name</Tooltip></button>
+            }
         }
     }
+    <br><br><br>
+    <button class="btn btn-primary" @onclick="(args)=>{isChoosing = false;}"><Tooltip Text="Cancel adding an effect">Cancel</Tooltip></button>
+
 </div><br>
 <div class="spellInfo p-3 @showInfo" id="spellInfo">
     @if(effects == null)
@@ -25,43 +31,56 @@
     }
     else
     {
-        <table class="table">
+        <table class="table" style="table-layout: fixed ; width: 100%;">
             <thead>
                 <tr>
                     <th>Character Stats</th>
+                    <th>Spell Stats</th>
                     <th>Spell Options</th>
                     <th>Spell Description</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
+                    <td> 
+                        <div>
+                            <table align="left" style="width: 100%;">
+                                <tbody>
+                                <tr>
+                                    <td><Tooltip Text="Your MAG value, not mod">MAG:</Tooltip></td><td><input style="width: 33%;" type="number" name="MAG" min="0" max="99" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
+                                </tr>
+                                <tr>
+                                    <td><Tooltip Text="Your THM value, not mod">THM:</Tooltip></td><td><input style="width: 33%;" type="number" name="THM" min="0" max="99" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
+                                </tr>
+                                </tbody>
+                            </table><br>           
+                            <table align="left">
+                                <tr><th></th><th>Talents:</th></tr>
+                                <tr>
+                                    <td><input type="checkbox" name="destructiveCheck" bind="@hasDestructive"></td><td><Tooltip Text="Increases damage die of all destructive spells by one step">Destructive Spells</Tooltip></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
                     <td>
-                        <table align="left">
-                            <tbody>
+                        <table align="left" style="width: 100%;">
                             <tr>
-                                <td>MAG:</td><td><input type="number" name="MAG" maxlength="2" size="4" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
+                                <td>EMM bonus:</td><td><input style="width: 33%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
                             </tr>
                             <tr>
-                                <td>THM:</td><td><input type="number" name="THM" maxlength="2" size="4" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
-                            </tr>
-                            </tbody>
-                        </table><br>           
-                        <table align="left">
-                            <tr><th></th><th>Talents:</th></tr>
-                            <tr>
-                                <td><input type="checkbox" name="destructiveCheck" bind="@hasDestructive"></td><td>Destructive Spells</td>
+                                <td>Spell Level:</td><td><input style="width: 33%;" type="number" name="level" min="0" max="6" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
                             </tr>
                         </table>
                     </td>
                     <td>
-                        EMM bonus: <input type="number" name="EMMB" maxlength="2" size="4" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"><br><hr>
-                        @if(spell.effects != null){
-                            @foreach (var effect in spell.effects)
+                        @if(spell.effects != null)
+                        {
+                            @foreach(var effect in spell.effects)
                             {
                                 @effect.name<br>
-                            }
+                            }                        
                         }
-                        <button class="btn btn-primary" @onclick="(args) => ToggleAddingEffects(args)">Add Spell Effect</button>
+                        <button class="btn btn-primary" @onclick="(args) => ToggleAddingEffects(args)"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
                     </td>
                     <td>
                         <b>School:</b> @spell.school<br>
@@ -76,6 +95,8 @@
             </tbody>
         </table>
     }
+    <br><br>
+    <button class="btn btn-primary" @onclick="(args) => ClearSpell(args)">Clear Spell</button>
 </div>
 
 @code 
@@ -117,6 +138,9 @@
         public string school { get; set; }
         public int level { get; set; }
         public int cost { get; set; }
+        public bool unique {get; set; }
+        public int ammount {get; set; }
+
 
         public Keyword()
         {
@@ -125,6 +149,8 @@
             this.level = 0;
             this.name = "";
             this.school = "";
+            this.unique = false;
+            this.ammount = 0;
         }
     }
 
@@ -140,6 +166,22 @@
             this.level = 99;
             this.name = "wow";
             this.school = "wow";
+            this.unique = false;
+            this.ammount = 0;
+        }
+
+        public EffectKeyword Clone()
+        {
+            EffectKeyword newEffect = new EffectKeyword();
+            newEffect.cost = this.cost;
+            newEffect.description = this.description;
+            newEffect.help = this.help;
+            newEffect.level = this.level;
+            newEffect.name = this.name;
+            newEffect.school = this.school;
+            newEffect.unique = this.unique;
+            newEffect.ammount = this.ammount;
+            return newEffect;
         }
     }
 
@@ -147,6 +189,50 @@
     {
         isChoosing = false;
         effects = await Http.GetFromJsonAsync<EffectKeyword[]>("sample-data/effects.json");
+    }
+
+    private string DoMult(string orig)
+    {
+        int startMult = orig.IndexOf("%mult%");
+        int endMult = orig.IndexOf("%/mult%",startMult);
+        string[]? forMult = orig.Substring(startMult,endMult-startMult).Replace("%mult%","").Replace("%/mult%","").Split(";");
+        int answer = 1;
+        foreach(string mult in forMult)
+            answer *= System.Convert.ToInt32(mult);
+        orig = orig.Remove(startMult, endMult - startMult).Replace("%/mult%","").Insert(startMult,answer.ToString());
+        return orig;
+    }
+
+    private string DoQuad(string orig, int level)
+    {
+        int startQuad = orig.IndexOf("%quad%");
+        int endQuad = orig.IndexOf("%/quad%",startQuad);
+        string[]? forQuad = orig.Substring(startQuad,endQuad-startQuad).Replace("%quad%","").Replace("%/quad%","").Split(";");
+        double answer = Math.Round(System.Convert.ToDouble(forQuad[0])*Math.Pow(level,2) + System.Convert.ToDouble(forQuad[1])*level + System.Convert.ToDouble(forQuad[2]));
+        orig = orig.Remove(startQuad, endQuad - startQuad).Replace("%/quad%","").Insert(startQuad,answer.ToString());
+        return orig;
+    }
+
+    private string DoLevelDepend(string orig, int level)
+    {
+        int l0s = orig.IndexOf("%l0%");
+        int l0e = orig.IndexOf("%/l0%")+"%/l0%".Length;
+        int lps = orig.IndexOf("%l+%");
+        int lpe = orig.IndexOf("%/l+%")+"%/l+%".Length;
+        if (level == 0)
+            orig = orig.Remove(lps,lpe-lps).Replace("%l0%","").Replace("%/l0%","");
+        else
+            orig = orig.Remove(l0s,l0e-l0s).Replace("%l+%","").Replace("%/l+%","");
+        return orig;
+    }
+
+    private void UpdateSpellEffect(Spell spell)
+    {
+        if (spell.effect.Contains("%EMM%")) spell.effect = spell.effect.Replace("%EMM%",((MAGvalue-10)/2+EMMB).ToString());
+        if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",spell.level.ToString());
+        if (spell.effect.Contains("%l0%")) spell.effect = DoLevelDepend(spell.effect,spell.level);
+        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect,spell.level);
+        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect);
     }
 
     private EffectKeyword returnEffectByName(string effectname)
@@ -160,18 +246,33 @@
         return null;
     }
 
+    private int spellHasEffect(EffectKeyword effect)
+    {
+        if (spell.effects == null)
+            return -1;
+        for(int i = 0; i < spell.effects.Length; i++)
+            if (spell.effects[i].name == effect.name)
+                return i;
+        return -1;
+    }
+
     private async Task AddEffect(MouseEventArgs e, string effectname)
     {
-        EffectKeyword newEffect = returnEffectByName(effectname);
+        EffectKeyword newEffect = returnEffectByName(effectname).Clone();
         if (newEffect == null)
             return;
+        
         if (spell.effects == null)
         {
             spell.effects = new EffectKeyword[] {newEffect};
         }
         else
         {
-            spell.effects.Append(newEffect);
+            int ei = spellHasEffect(newEffect);
+            if (ei > -1)
+                spell.effects[ei].ammount += 1;
+            else
+                spell.effects.Append(newEffect);
         }
         UpdateSpellInfo();
         isChoosing = false;
@@ -190,6 +291,7 @@
             case 1: MAGvalue = newValue; break;
             case 2: THMvalue = newValue; break;
             case 3: EMMB = newValue; break;
+            case 4: spell.level = newValue; break;
             default: return;
         }
         UpdateSpellInfo();
@@ -197,14 +299,18 @@
 
     private async Task UpdateSpellInfo()
     {   
-        spell.level = spell.effects[0].level;
         spell.pointcost = spell.effects[0].cost;
-        spell.manacost = 5*spell.effects[0].level;
+        spell.manacost = 5*spell.level;
         spell.school = spell.effects[0].school;
-        spell.castDC = 10+4*spell.effects[0].level;
-        spell.effect = spell.effects[0].description;        
-        if (spell.effect.Contains("%%EMM%%")) spell.effect = spell.effect.Replace("%%EMM%%",((MAGvalue-10)/2+EMMB).ToString());
+        spell.castDC = 10+4*spell.level;
+        spell.effect = spell.effects[0].description;
+        UpdateSpellEffect(spell);                
         InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClearSpell(MouseEventArgs e)
+    {
+        spell = new Spell();
     }
 
 }
