@@ -36,7 +36,7 @@
                 <tr>
                     <th>Character Stats</th>
                     <th>Spell Stats</th>
-                    <th>Spell Options</th>
+                    <th>Spell Keywords</th>
                     <th>Spell Description</th>
                 </tr>
             </thead>
@@ -47,17 +47,17 @@
                             <table align="left" style="width: 100%;">
                                 <tbody>
                                 <tr>
-                                    <td><Tooltip Text="Your MAG value, not mod">MAG:</Tooltip></td><td><input style="width: 33%;" type="number" name="MAG" min="0" max="99" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
+                                    <td><Tooltip Text="Your MAG value, not mod">MAG:</Tooltip></td><td><input style="width: 25%;" type="number" name="MAG" min="0" max="99" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
                                 </tr>
                                 <tr>
-                                    <td><Tooltip Text="Your THM value, not mod">THM:</Tooltip></td><td><input style="width: 33%;" type="number" name="THM" min="0" max="99" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
+                                    <td><Tooltip Text="Your THM value, not mod">THM:</Tooltip></td><td><input style="width: 25%;" type="number" name="THM" min="0" max="99" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
                                 </tr>
                                 </tbody>
                             </table><br>           
                             <table align="left">
                                 <tr><th></th><th>Talents:</th></tr>
                                 <tr>
-                                    <td><input type="checkbox" name="destructiveCheck" bind="@hasDestructive"></td><td><Tooltip Text="Increases damage die of all destructive spells by one step">Destructive Spells</Tooltip></td>
+                                    <td><input type="checkbox" name="destructiveCheck" @bind="@hasDestructive" @oninput="@((e) => {UpdateBools(e.Value,1);})" ></td><td><Tooltip Text="Increases damage die of all destructive spells by one step">Destructive Spells</Tooltip></td>
                                 </tr>
                             </table>
                         </div>
@@ -65,27 +65,23 @@
                     <td>
                         <table align="left" style="width: 100%;">
                             <tr>
-                                <td>EMM bonus:</td><td><input style="width: 33%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
+                                <td>EMM bonus:</td><td><input style="width: 25%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
                             </tr>
                             <tr>
-                                <td>Spell Level:</td><td><input style="width: 33%;" type="number" name="level" min="0" max="6" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
+                                <td>Spell Level:</td><td><input style="width: 25%;" type="number" name="level" min="0" max="6" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
                             </tr>
                         </table>
                     </td>
                     <td>
-                        @if(spell.effects != null)
+                        @foreach(var effect in spell.effects)
                         {
-                            @foreach(var effect in spell.effects)
-                            {
-                                @effect.name<br>
-                            }                        
-                        }
-                        <button class="btn btn-primary" @onclick="(args) => ToggleAddingEffects(args)"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
+                            @effect.GetName()<br>
+                        }                                    
                     </td>
                     <td>
                         <b>School:</b> @spell.school<br>
                         <b>Level:</b> @spell.level<br>
-                        <b>Spellpoints:</b> @spell.pointcost<br>
+                        <b>Spellpoints:</b> @spell.pointcost / @spell.pointmax<br>
                         <b>Mana:</b> @spell.manacost<br>
                         <b>Cast DC:</b> @spell.castDC<br>
                         <hr>
@@ -94,6 +90,11 @@
                 </tr>
             </tbody>
         </table>
+    }
+    <br><br>
+    @if (spell.effects.Count == 0 || spell.effects.Count < spell.level)
+    {
+        <button class="btn btn-primary" @onclick="(args) => ToggleAddingEffects(args)"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
     }
     <br><br>
     <button class="btn btn-primary" @onclick="(args) => ClearSpell(args)">Clear Spell</button>
@@ -115,10 +116,11 @@
         public string school;
         public int level;
         public int pointcost;
+        public int pointmax;
         public int manacost;
         public int castDC;
         public string effect;
-        public EffectKeyword[]? effects;
+        public List<EffectKeyword> effects;
 
         public Spell()
         {
@@ -128,6 +130,8 @@
             this.manacost = 0;
             this.castDC = 10;
             this.effect = "?";
+            this.pointmax = 3;
+            this.effects = new List<EffectKeyword>();
         }
     }
 
@@ -157,7 +161,7 @@
     public class EffectKeyword : Keyword
     {
         public string description { get; set; }
-
+        public List<EffectModifier> modifiers;
         public EffectKeyword()
         {
             this.cost = 99;
@@ -168,6 +172,7 @@
             this.school = "wow";
             this.unique = false;
             this.ammount = 0;
+            this.modifiers = new List<EffectModifier>();
         }
 
         public EffectKeyword Clone()
@@ -182,6 +187,40 @@
             newEffect.unique = this.unique;
             newEffect.ammount = this.ammount;
             return newEffect;
+        }
+
+        public string GetName()
+        {
+            string desc = this.name;
+            if (this.ammount > 1)
+                desc += " x" + this.ammount.ToString();
+            if (this.modifiers.Count > 0){
+                desc += " (";
+                foreach(EffectModifier mod in this.modifiers)
+                {
+                    desc += mod.name;
+                    if (mod.ammount > 0)
+                        desc += " x" + mod.ammount.ToString();
+                    desc += ",";
+                }
+                desc += desc.Remove(desc.LastIndexOf(",")) + ")";
+            }
+            return desc;
+        }
+
+    }
+
+    public class EffectModifier : Keyword
+    {
+        public EffectModifier()
+        {
+            this.cost = 0;
+            this.help = "";
+            this.level = 0;
+            this.name = "";
+            this.school = "";
+            this.unique = false;
+            this.ammount = 0;
         }
     }
 
@@ -198,7 +237,7 @@
         string[]? forMult = orig.Substring(startMult,endMult-startMult).Replace("%mult%","").Replace("%/mult%","").Split(";");
         int answer = 1;
         foreach(string mult in forMult)
-            answer *= Math.Max(System.Convert.ToInt32(mult),1);
+            answer *= System.Convert.ToInt32(mult);
         orig = orig.Remove(startMult, endMult - startMult).Replace("%/mult%","").Insert(startMult,answer.ToString());
         return orig;
     }
@@ -215,14 +254,59 @@
 
     private string DoLevelDepend(string orig, int level)
     {
-        int l0s = orig.IndexOf("%l0%");
-        int l0e = orig.IndexOf("%/l0%")+"%/l0%".Length;
-        int lps = orig.IndexOf("%l+%");
-        int lpe = orig.IndexOf("%/l+%")+"%/l+%".Length;
+        string rem, kep;
         if (level == 0)
-            orig = orig.Remove(lps,lpe-lps).Replace("%l0%","").Replace("%/l0%","");
+        {   rem = "l+"; kep = "l0"; }
         else
-            orig = orig.Remove(l0s,l0e-l0s).Replace("%l+%","").Replace("%/l+%","");
+        {   rem = "l0"; kep = "l+"; }
+        int rs,re;
+        while (orig.Contains("%"+rem+"%"))
+        {
+            rs = orig.IndexOf("%"+rem+"%");
+            re = orig.IndexOf("%/"+rem+"%")+("%/"+rem+"%").Length;
+            orig = orig.Remove(rs,re-rs);
+        }
+        orig = orig.Replace("%"+kep+"%","").Replace("%/"+kep+"%","");
+        return orig;
+    }
+
+    private string IncreaseDie(string die)
+    {
+        switch(die)
+        {
+            case "d4": die = "d6"; break;
+            case "d6": die = "d8"; break;
+            case "d8": die = "d10"; break;
+            case "d10": die = "d12"; break;
+            case "d12": if(hasDestructive) die = "2d6"; break;
+            default: break;
+        }
+        return die;
+    }
+
+    private string DecreaseDie(string die)
+    {
+        switch(die)
+        {
+            case "d6": die = "d4"; break;
+            case "d8": die = "d6"; break;
+            case "d10": die = "d8"; break;
+            case "d12": die = "d10"; break;
+            case "2d6": die = "d12"; break;
+            default: break;
+        }
+        return die;
+    }
+
+    private string DoDam(string orig)
+    {
+        int ds = orig.IndexOf("%d%");
+        int de = orig.IndexOf("%/d%",ds);
+        string dice = orig.Substring(ds,de-ds).Replace("%d%","");
+        Console.WriteLine(dice + " " + hasDestructive);
+        if (hasDestructive)
+            dice = IncreaseDie(dice);
+        orig = orig.Remove(ds,de-ds+"%/d%".Length).Insert(ds,dice);      
         return orig;
     }
 
@@ -230,7 +314,9 @@
     {
         if (spell.effect.Contains("%EMM%")) spell.effect = spell.effect.Replace("%EMM%",((MAGvalue-10)/2+EMMB).ToString());
         if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",spell.level.ToString());
+        if (spell.effect.Contains("%lvlm%")) spell.effect = spell.effect.Replace("%lvlm%",Math.Max(spell.level,1).ToString());
         if (spell.effect.Contains("%l0%")) spell.effect = DoLevelDepend(spell.effect,spell.level);
+        while (spell.effect.Contains("%d%")) spell.effect = DoDam(spell.effect);
         while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect,spell.level);
         while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect);
     }
@@ -250,7 +336,7 @@
     {
         if (spell.effects == null)
             return -1;
-        for(int i = 0; i < spell.effects.Length; i++)
+        for(int i = 0; i < spell.effects.Count; i++)
             if (spell.effects[i].name == effect.name)
                 return i;
         return -1;
@@ -261,19 +347,11 @@
         EffectKeyword newEffect = returnEffectByName(effectname).Clone();
         if (newEffect == null)
             return;
-        
-        if (spell.effects == null)
-        {
-            spell.effects = new EffectKeyword[] {newEffect};
-        }
+        int ei = spellHasEffect(newEffect);
+        if (ei > -1)
+            spell.effects[ei].ammount += 1;
         else
-        {
-            int ei = spellHasEffect(newEffect);
-            if (ei > -1)
-                spell.effects[ei].ammount += 1;
-            else
-                spell.effects.Append(newEffect);
-        }
+            spell.effects.Add(newEffect);
         UpdateSpellInfo();
         isChoosing = false;
     }
@@ -297,9 +375,25 @@
         UpdateSpellInfo();
     }
 
+    private async Task UpdateBools(object value, int type)
+    {
+        bool newValue = System.Convert.ToBoolean(value);
+        switch(type)
+        {
+            case 1: hasDestructive = newValue; break;
+            default: return;
+        }
+        UpdateSpellInfo();
+    }
+
     private async Task UpdateSpellInfo()
     {   
+        if (spell.effects.Count == 0)
+            return;
+        while (spell.effects.Count > Math.Max(1,spell.level))
+            spell.effects.Remove(spell.effects.Last());
         spell.pointcost = spell.effects[0].cost;
+        spell.pointmax = 3+spell.level;
         spell.manacost = 5*spell.level;
         spell.school = spell.effects[0].school;
         spell.castDC = 10+4*spell.level;

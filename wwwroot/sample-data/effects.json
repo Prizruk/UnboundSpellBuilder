@@ -1,11 +1,11 @@
 ﻿[
   {
-    "description": "Deals %l0%2%/l0%%l+%%quad%0,25;0,5;2,14%/quad%%/l+%d8 + %mult%%EMM%;2;%lvl%%/mult% of damage",
+    "description": "Deals %l0%2%/l0%%l+%%quad%0,25;0,5;2,14%/quad%%/l+%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%2%/l+%;%lvlm%%/mult% of damage",
     "name": "Damage",
     "help": "Deals damage",
     "school": "Destruction",
     "level": 0,
-    "cost": 2,
+    "cost": 1,
     "unique": true
   }
 ]
