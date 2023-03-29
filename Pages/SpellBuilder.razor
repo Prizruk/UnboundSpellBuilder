@@ -1,29 +1,47 @@
 @page "/spellbuilder"
+@using static UnboundSpellBuilder.Pages.SpellClasses
 @inject HttpClient Http
 
 <PageTitle>Spell Builder</PageTitle>
 
 @{
-    var showChoice = isChoosing ? "d-block" : "d-none";
-    var showInfo = isChoosing ? "d-none" : "d-block";
+    var allowedLevel = skillBonus <= 10 ? skillBonus/2 : Math.Min(6,(skillBonus-2)/2);
+    var showInfo = showMode == 0 ? "d-block" : "d-none";
+    var showEffects = showMode == 1 ? "d-block" : "d-none";
+    var showSpellMods = showMode == 2 ? "d-block" : "d-none";
 }
 
 <h1>Spell Builder</h1>
 
-<div class="spellChoice p-3 @showChoice" id="spellChoice">
-    @if (effects != null){
+<div class="effectChoice p-3 @showEffects" id="effectChoice">
+    @if (effects != null)
+    {
         @foreach(var effect in effects)
         {
-            @if(!effect.unique || spellHasEffect(effect) == -1)
+            @if(IsEligeble(effect))
             {
-                <button class="btn btn-primary" @onclick="(args)=> AddEffect(args, effect.name)"><Tooltip Text=@effect.help>@effect.name</Tooltip></button>
+                <button class="btn btn-primary" style="margix: 1px;" @onclick="(args)=> AddEffect(args, effect.name)"><Tooltip Text=@effect.help>@effect.name</Tooltip></button><br>
             }
         }
     }
     <br><br><br>
-    <button class="btn btn-primary" @onclick="(args)=>{isChoosing = false;}"><Tooltip Text="Cancel adding an effect">Cancel</Tooltip></button>
+    <button class="btn btn-primary" @onclick="(args)=>{showMode = 0;}"><Tooltip Text="Cancel adding an effect">Cancel</Tooltip></button>
 
 </div><br>
+<div class="spellmodChoice p-3 @showSpellMods" id="spellmodChoice">
+    @if (spellmods != null)
+    {
+        @foreach (var spellmod in spellmods)
+        {
+            @if(IsEligeble(spellmod))
+            {
+                <button class="btn btn-primary" style="margix: 1px;" @onclick="(args)=> AddSpellModifier(args, spellmod.name)"><Tooltip Text=@spellmod.help>@spellmod.name</Tooltip></button><br>
+            }            
+        }
+    }
+    <br><br><br>
+    <button class="btn btn-primary" @onclick="(args)=>{showMode = 0;}"><Tooltip Text="Cancel adding a spell modifier">Cancel</Tooltip></button>
+</div>
 <div class="spellInfo p-3 @showInfo" id="spellInfo">
     @if(effects == null)
     {
@@ -34,14 +52,83 @@
         <table class="table" style="table-layout: fixed ; width: 100%;">
             <thead>
                 <tr>
-                    <th>Character Stats</th>
-                    <th>Spell Stats</th>
-                    <th>Spell Keywords</th>
                     <th>Spell Description</th>
+                    <th>Spell Keywords</th>
+                    <th>Spell Stats</th>
+                    <th>Character Stats</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr>                    
+                    <td>
+                        <b>School:</b> @spell.school<br>
+                        <b>Level:</b> @spell.level<br>
+                        @if(spell.effects.Count > 1)
+                        {
+                            @foreach (var effect in spell.effects)
+                            {
+                                <b>Duration (@effect.name):</b> @ReturnDuration(effect.duration) <br>
+                            }
+                        }
+                        @if(spell.effects.Count == 1)
+                        {
+                            <b>Duration:</b> @ReturnDuration(@spell.effects[0].duration) <br>
+                        }
+                        @if(spell.effects.Count == 0)
+                        {
+                            <b>Duration:</b> @spell.duration <br>
+                        }
+                        <b>Range:</b> @ReturnRange()<br>
+                        <b>Target:</b> @ReturnTarget()<br>
+                        <b>Spellpoints:</b> @spell.pointcost / @spell.pointmax<br>
+                        <b>Mana:</b> @spell.manacost<br>
+                        <b>Cast DC:</b> @spell.castDC<br>
+                        <hr>
+                        @spell.effect
+                    </td>
+                    <td>
+                        @foreach (var spellmod in spell.modifiers)
+                        {
+                            <button class="btn btn-primary" style="margix: 1px; padding: 1px;" @onclick="(args)=> RemoveSpellModifier(args, spellmod.name)"><Tooltip Text="Remove Modifier">x</Tooltip></button> @spellmod.GetName()<br>
+                        }
+                        @if(spell.modifiers.Count > 0)
+                        {
+                            <br>
+                        }
+                        @foreach(var effect in spell.effects)
+                        {
+                            <button class="btn btn-primary" style="margix: 1px; padding: 1px;" @onclick="(args)=> RemoveEffect(args, effect.name)"><Tooltip Text="Remove Effect">x</Tooltip></button> @effect.GetName()<br>
+                        }                                    
+                    </td>                    
+                    <td>
+                        <table align="left" style="width: 100%;">
+                            <tr>
+                                <td>Spell School:</td>
+                                <td>
+                                    <select @bind="spell.school" disabled="@blockSelection">
+                                        <option value=""></option>
+                                        <option value="Universal">Universal</option>
+                                        <option value="Abjuration">Abjuration</option>
+                                        <option value="Conjuration">Conjuration</option>
+                                        <option value="Destruction">Destruction</option>
+                                        <option value="Divination">Divination</option>
+                                        <option value="Enchantment">Enchantment</option>
+                                        <option value="Illusion">Illusion</option>
+                                        <option value="Ordinary">Ordinary</option>
+                                        <option value="Necromancy">Necromancy</option>
+                                        <option value="Restoration">Restoration</option>
+                                        <option value="Transmutation">Transmutation</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>EMM bonus:</td><td><input style="width: 25%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
+                            </tr>
+                            <tr>
+                                <td>Spell Level:</td><td><input style="width: 25%;" type="number" name="level" min="0" max="@allowedLevel" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
+                            </tr>
+                        </table>
+                    </td>
                     <td> 
                         <div>
                             <table align="left" style="width: 100%;">
@@ -51,6 +138,21 @@
                                 </tr>
                                 <tr>
                                     <td><Tooltip Text="Your THM value, not mod">THM:</Tooltip></td><td><input style="width: 25%;" type="number" name="THM" min="0" max="99" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
+                                </tr>
+                                <tr><td><Tooltip Text="Appropriate magic skill proficiency">Skill:</Tooltip></td>
+                                    <td>
+                                        <select @bind="skillBonus">
+                                            <option value=0>None</option>
+                                            <option value=2>Apprentice</option>
+                                            <option value=4>Journeyman</option>
+                                            <option value=6>Professional</option>
+                                            <option value=8>Master</option>
+                                            <option value=10>Grandmaster</option>
+                                            <option value=12>Grandmaster+</option>
+                                            <option value=14>Grandmaster++</option>
+                                            <option value=16>Grandmaster+++</option>
+                                        </select>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table><br>           
@@ -62,39 +164,18 @@
                             </table>
                         </div>
                     </td>
-                    <td>
-                        <table align="left" style="width: 100%;">
-                            <tr>
-                                <td>EMM bonus:</td><td><input style="width: 25%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
-                            </tr>
-                            <tr>
-                                <td>Spell Level:</td><td><input style="width: 25%;" type="number" name="level" min="0" max="6" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        @foreach(var effect in spell.effects)
-                        {
-                            @effect.GetName()<br>
-                        }                                    
-                    </td>
-                    <td>
-                        <b>School:</b> @spell.school<br>
-                        <b>Level:</b> @spell.level<br>
-                        <b>Spellpoints:</b> @spell.pointcost / @spell.pointmax<br>
-                        <b>Mana:</b> @spell.manacost<br>
-                        <b>Cast DC:</b> @spell.castDC<br>
-                        <hr>
-                        @spell.effect
-                    </td>
                 </tr>
             </tbody>
         </table>
     }
     <br><br>
-    @if (spell.effects.Count == 0 || spell.effects.Count < spell.level)
+    @if(spell.school != "")
     {
-        <button class="btn btn-primary" @onclick="(args) => ToggleAddingEffects(args)"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
+    <button class="btn btn-primary" style="margin: 1px;" @onclick="(args)=>{showMode = 2;}"><Tooltip Text="Add an Spell Modifier">Add Modifier</Tooltip></button>
+        @if (spell.effects.Count == 0 || SpellHasEffectNonUnique() || spell.effects.Count < spell.level)
+        {
+            <button class="btn btn-primary" style="margin: 1px;" @onclick="(args)=>{showMode = 1;}"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
+        }
     }
     <br><br>
     <button class="btn btn-primary" @onclick="(args) => ClearSpell(args)">Clear Spell</button>
@@ -102,132 +183,159 @@
 
 @code 
 {
-    private EffectKeyword[]? effects;
+    private List<EffectKeyword> effects;
+    private List<SpellModifier> spellmods;
     private Spell spell = new Spell();
     [Parameter]
-    public bool isChoosing { get; set; }
+    public int showMode { get; set; }    
+    [Parameter]
+    public int allowedLevel {get;set;}
+    public bool blockSelection {get;set;}
     public bool hasDestructive { get; set; }
     public int MAGvalue { get; set;} = 10;
     public int THMvalue { get; set;} = 10;
     public int EMMB{ get; set;} = 0;
+    public int skillBonus{get;set;} = 0;
 
-    public class Spell
-    {
-        public string school;
-        public int level;
-        public int pointcost;
-        public int pointmax;
-        public int manacost;
-        public int castDC;
-        public string effect;
-        public List<EffectKeyword> effects;
-
-        public Spell()
-        {
-            this.school = "?";
-            this.level = 0;
-            this.pointcost = 0;
-            this.manacost = 0;
-            this.castDC = 10;
-            this.effect = "?";
-            this.pointmax = 3;
-            this.effects = new List<EffectKeyword>();
-        }
-    }
-
-    public class Keyword
-    {
-        public string name { get; set; }
-        public string help { get; set; }
-        public string school { get; set; }
-        public int level { get; set; }
-        public int cost { get; set; }
-        public bool unique {get; set; }
-        public int ammount {get; set; }
-
-
-        public Keyword()
-        {
-            this.cost = 0;
-            this.help = "";
-            this.level = 0;
-            this.name = "";
-            this.school = "";
-            this.unique = false;
-            this.ammount = 0;
-        }
-    }
-
-    public class EffectKeyword : Keyword
-    {
-        public string description { get; set; }
-        public List<EffectModifier> modifiers;
-        public EffectKeyword()
-        {
-            this.cost = 99;
-            this.description = "www";
-            this.help = "wow";
-            this.level = 99;
-            this.name = "wow";
-            this.school = "wow";
-            this.unique = false;
-            this.ammount = 0;
-            this.modifiers = new List<EffectModifier>();
-        }
-
-        public EffectKeyword Clone()
-        {
-            EffectKeyword newEffect = new EffectKeyword();
-            newEffect.cost = this.cost;
-            newEffect.description = this.description;
-            newEffect.help = this.help;
-            newEffect.level = this.level;
-            newEffect.name = this.name;
-            newEffect.school = this.school;
-            newEffect.unique = this.unique;
-            newEffect.ammount = this.ammount;
-            return newEffect;
-        }
-
-        public string GetName()
-        {
-            string desc = this.name;
-            if (this.ammount > 1)
-                desc += " x" + this.ammount.ToString();
-            if (this.modifiers.Count > 0){
-                desc += " (";
-                foreach(EffectModifier mod in this.modifiers)
-                {
-                    desc += mod.name;
-                    if (mod.ammount > 0)
-                        desc += " x" + mod.ammount.ToString();
-                    desc += ",";
-                }
-                desc += desc.Remove(desc.LastIndexOf(",")) + ")";
-            }
-            return desc;
-        }
-
-    }
-
-    public class EffectModifier : Keyword
-    {
-        public EffectModifier()
-        {
-            this.cost = 0;
-            this.help = "";
-            this.level = 0;
-            this.name = "";
-            this.school = "";
-            this.unique = false;
-            this.ammount = 0;
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
-        isChoosing = false;
-        effects = await Http.GetFromJsonAsync<EffectKeyword[]>("sample-data/effects.json");
+        showMode = 0;
+        EffectKeyword[]? tempEffects = await Http.GetFromJsonAsync<EffectKeyword[]>("sample-data/effects.json");
+        effects = new List<EffectKeyword>(tempEffects);
+        SpellModifier[]? tempSpellMods = await Http.GetFromJsonAsync<SpellModifier[]>("sample-data/spellmodifiers.json");
+        spellmods = new List<SpellModifier>(tempSpellMods);
+        effects.Sort((p, q) => p.name.CompareTo(q.name));
+        spellmods.Sort((p, q) => p.name.CompareTo(q.name));
+    }
+
+    public bool IsEligeble(EffectKeyword effect)
+    {
+        if (spell.school == "Universal")
+        {
+            if (effect.level > spell.level) return false;
+        }
+        else
+        {
+            int ss = effect.school.IndexOf(spell.school);
+            if (ss < 0) return false;
+            int se = effect.school.IndexOf(";",ss);
+            if (se < 0) se = effect.school.Length;
+            int lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
+            if (lv > spell.level) return false;
+        }
+        if(effect.GetCost(spellHasEffectAmmount(effect.name)+1,false) > spell.pointmax-spell.pointcost)
+            return false;
+        if(effect.unique && spellHasEffect(effect.name) > -1)
+            return false;
+        return true;
+    }
+
+    public bool IsEligeble(SpellModifier effect)
+    {
+        if (effect.school.Contains("Universal") || spell.school == "Universal")
+            if(effect.level > allowedLevel) return false;
+        else
+        {
+            int ss = effect.school.IndexOf(spell.school);
+            if (ss < 0) return false;
+            int se = effect.school.IndexOf(";",ss);
+            if (se < 0) se = effect.school.Length - 1;
+            int lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
+            if (lv > allowedLevel) return false;
+        }
+        if(effect.GetCost(spellHasModifierAmmount(effect.name)+1,false) > spell.pointmax-spell.pointcost)
+            return false;
+        if(effect.unique && spellHasModifier(effect.name) > -1)
+            return false;
+        return true;
+    }
+
+    public string ReturnDuration(int durationType)
+    {
+        string duration = "";
+        int EMM = Math.Max((MAGvalue-10)/2 + EMMB,1);
+        if (durationType >= 10)
+        {
+            durationType -= 10;
+            duration = "Sustained + ";
+        }
+        switch(durationType)
+        {
+            case -1: duration += "?"; break;
+            case 0: duration += "Instant"; break;
+            case 1: duration += "1 round"; break;
+            case 2: duration += EMM + " rounds"; break;
+            case 3: duration += EMM + " minutes"; break;
+            case 4: duration += EMM*10 + " minutes"; break;
+            case 5: duration += EMM*10 + " hours"; break;
+            case 6: duration += EMM + " days"; break;
+            case 7: duration += EMM + " weeks"; break;
+            case 8: duration += EMM + " months"; break;
+            case 9: duration += EMM + " years"; break;
+            default: if(durationType>9) duration = "semi-permanent"; else duration = "unknown"; break;
+        }
+        return duration;
+    }
+
+    public string ReturnRange()
+    {
+        string range = "";
+        double EMM = (MAGvalue-10)/2 + EMMB;
+        switch(spell.rangeType)
+        {
+            case -1: range = "Personal"; break;
+            case 0: range = "Touch"; break;
+            case 1: range = "Reach"; break;
+            case 2: range = "Close (" + ((4 + Math.Floor(EMM/2))*5) + "ft.)"; break;
+            case 3: range = "Short (" + (4+EMM)*5 + "ft.)"; break;
+            case 4: range = "Medium (" + (10+EMM)*10 +"ft.)"; break;
+            case 5: range = "Long ("+ (10+EMM)*40 +"ft.)"; break;
+            case 6: range = "Very Long("+ (5+EMM)*100 +")"; break;
+            default: range = "?"; break;
+        }
+        return range;
+    }
+
+    public double ReturnRangeNumber()
+    {
+        double range = 0;
+        double EMM = (MAGvalue-10)/2 + EMMB;
+        switch(spell.rangeType)
+        {
+            case 0: range = 5; break;
+            case 1: range = 5*(1+spellHasModifierAmmount("Reach")); break;
+            case 2: range = (4 + Math.Floor(EMM/2))*5; break;
+            case 3: range = (4+EMM)*5; break;
+            case 4: range = (10+EMM)*10; break;
+            case 5: range = (10+EMM)*40; break;
+            case 6: range = (5+EMM)*100; break;
+            default: range = 0; break;
+        }
+        return range;
+    }
+
+    public string ReturnTarget()
+    {
+        string target = "";
+        double EMM = (MAGvalue-10)/2 + EMMB;
+        int dimB = spellHasModifierAmmount("Dimensions");
+        switch(spell.targetType)
+        {
+            case -1: target = "Personal"; break;
+            case 0: target = "Single"; break;
+            case 1: target = (10*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. Cone"; break;
+            case 2: target = (5*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. Blast"; break;
+            case 3: target = (15*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. Line"; break;
+            case 4: target = (spell.level+spell.lvlBonus+dimB+1)*(spellHasModifierAmmount("Cube")) + " of 5ft. Cubes"; break;
+            case 5: target = (5*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. Burst"; break;
+            case 6: target = (5*(EMM+EMMB)*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. long " + (5*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. high Wall"; break;
+            case 7: target = (5*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + " wide " + (15*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. tall Geyser"; break;
+            case 8: target = (10*(Math.Max(spell.level,1)+spell.lvlBonus+dimB)) + "ft. Geyser"; break;
+            case 9: target = (2*(Math.Max(spell.level,1)+spell.lvlBonus)) + " additional targets within " + Math.Ceiling(ReturnRangeNumber()/10)*5 +"ft. of the first target"; break;
+            default: break;
+        }
+        return target;
     }
 
     private string DoMult(string orig)
@@ -235,10 +343,24 @@
         int startMult = orig.IndexOf("%mult%");
         int endMult = orig.IndexOf("%/mult%",startMult);
         string[]? forMult = orig.Substring(startMult,endMult-startMult).Replace("%mult%","").Replace("%/mult%","").Split(";");
-        int answer = 1;
-        foreach(string mult in forMult)
-            answer *= System.Convert.ToInt32(mult);
-        orig = orig.Remove(startMult, endMult - startMult).Replace("%/mult%","").Insert(startMult,answer.ToString());
+        double answer = 1;
+        foreach(string mult in forMult){
+            answer *= System.Convert.ToDouble(mult.Replace(".",","));
+        }
+        orig = orig.Remove(startMult, endMult - startMult + "%/mult%".Length).Insert(startMult,Math.Floor(answer).ToString());
+        return orig;
+    }
+
+    private string DoAdd(string orig)
+    {
+        int startAdd = orig.IndexOf("%add%");
+        int endAdd = orig.IndexOf("%/add%",startAdd);
+        string[]? forAdd = orig.Substring(startAdd,endAdd-startAdd).Replace("%add%","").Replace("%/add%","").Split(";");
+        int answer = 0;
+        foreach(string add in forAdd){
+            answer += System.Convert.ToInt32(add);
+        }
+        orig = orig.Remove(startAdd, endAdd - startAdd + "%/add%".Length).Insert(startAdd,answer.ToString());
         return orig;
     }
 
@@ -270,55 +392,109 @@
         return orig;
     }
 
-    private string IncreaseDie(string die)
-    {
-        switch(die)
+    private string IncreaseDie(string die, int times)
+    {   
+        while(times > 0)
         {
-            case "d4": die = "d6"; break;
-            case "d6": die = "d8"; break;
-            case "d8": die = "d10"; break;
-            case "d10": die = "d12"; break;
-            case "d12": if(hasDestructive) die = "2d6"; break;
-            default: break;
+            switch(die)
+            {
+                case "d4": die = "d6"; break;
+                case "d6": die = "d8"; break;
+                case "d8": die = "d10"; break;
+                case "d10": die = "d12"; break;
+                case "d12": if(hasDestructive) die = "2d6"; break;
+                default: break;
+            }
+            times--;
         }
         return die;
     }
 
-    private string DecreaseDie(string die)
+    private string DecreaseDie(string die, int times)
     {
-        switch(die)
+        while(times > 0)
         {
-            case "d6": die = "d4"; break;
-            case "d8": die = "d6"; break;
-            case "d10": die = "d8"; break;
-            case "d12": die = "d10"; break;
-            case "2d6": die = "d12"; break;
-            default: break;
+            switch(die)
+            {
+                case "d6": die = "d4"; break;
+                case "d8": die = "d6"; break;
+                case "d10": die = "d8"; break;
+                case "d12": die = "d10"; break;
+                case "2d6": die = "d12"; break;
+                default: break;
+            }
+            times--;
         }
         return die;
     }
 
-    private string DoDam(string orig)
+    private string DoDam(string orig, int damBonus)
     {
         int ds = orig.IndexOf("%d%");
         int de = orig.IndexOf("%/d%",ds);
         string dice = orig.Substring(ds,de-ds).Replace("%d%","");
-        Console.WriteLine(dice + " " + hasDestructive);
-        if (hasDestructive)
-            dice = IncreaseDie(dice);
-        orig = orig.Remove(ds,de-ds+"%/d%".Length).Insert(ds,dice);      
+        if (damBonus > 0) dice = IncreaseDie(dice, damBonus);
+        else if (damBonus < 0) dice = DecreaseDie(dice, -1*damBonus);        
+        orig = orig.Remove(ds,de-ds+"%/d%".Length);
+        if (dice == "2d6") orig = orig.Insert(ds,dice.Remove(0,1));
+        else orig = orig.Insert(ds,dice);  
+        if (orig.Contains("%dbm%"))
+        {
+            int dbs = orig.IndexOf("%dbm%");
+            orig = orig.Remove(dbs,"%dbm%".Length);
+            if (dice == "2d6") orig = orig.Insert(dbs,"2");
+            else orig = orig.Insert(dbs,"1");
+        }    
+        return orig;
+    }
+
+    private string DoElemental(string orig)
+    {
+        int es = orig.IndexOf("%el%");
+        int ee = orig.IndexOf("%/el%");
+        string[] values = orig.Substring(es,ee-es).Replace("%/el%","").Split(";");
+        if (spellHas(new string[] {"Basic Energy","Uncommon Energy","Rare Energy","Ancient Energy","Necrotic","Negative Energy","Positive Energy","Poison","Psychic","Primal Energy","Shade","Astral","Holy","Unholy"}))
+            orig = orig.Remove(es,ee-es+"%/el%".Length).Insert(es,values[0]);
+        else
+            orig = orig.Remove(es,ee-es+"%/el%".Length).Insert(es,values[1]);
+        return orig;
+    }
+
+    private string DoOption(string orig)
+    {
+        int os = orig.IndexOf("%opt%");
+        int oe = orig.IndexOf("%/opt%");
+        string optionResult = "(";
+        string[]? optionParams = orig.Substring(os,oe-os).Replace("%opt%","").Split(";");
+        int amm = System.Convert.ToInt32(optionParams[2]);
+        string[]? var1 = optionParams[0].Split(":");
+        var1[1] = var1[1].Replace("+",var1[0]);
+        string[]? var2 = optionParams[1].Split(":");        
+        var2[1] = var2[1].Replace("+",var2[0]);
+        for (int i = 0; i < amm; i++)
+        {
+            optionResult += (System.Convert.ToInt32(var1[0])+(System.Convert.ToInt32(var1[1])*i)).ToString() + " " + var1[2] + " " +
+                            (System.Convert.ToInt32(var2[0])+(System.Convert.ToInt32(var2[1])*(amm-i-1))).ToString() + " " + var2[2] + ";";
+        }
+        optionResult = optionResult.Remove(optionResult.Length-1) + ")";
+        orig = orig.Remove(os,oe-os+"%/opt%".Length).Insert(os,optionResult);
         return orig;
     }
 
     private void UpdateSpellEffect(Spell spell)
     {
         if (spell.effect.Contains("%EMM%")) spell.effect = spell.effect.Replace("%EMM%",((MAGvalue-10)/2+EMMB).ToString());
-        if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",spell.level.ToString());
-        if (spell.effect.Contains("%lvlm%")) spell.effect = spell.effect.Replace("%lvlm%",Math.Max(spell.level,1).ToString());
+        if (spell.effect.Contains("%EMMh%")) spell.effect = spell.effect.Replace("%EMMh%",(((MAGvalue-10)/2+EMMB)/2).ToString());
+        if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",(spell.level+spell.lvlBonus).ToString());
+        if (spell.effect.Contains("%lvlm%")) spell.effect = spell.effect.Replace("%lvlm%",(Math.Max(spell.level,1)+spell.lvlBonus).ToString());
+        if (spell.effect.Contains("%lvlmh%")) spell.effect = spell.effect.Replace("%lvlmh%", (System.Convert.ToDouble(1+spell.lvlBonus+Math.Max(spell.level,1))/2).ToString());        
         if (spell.effect.Contains("%l0%")) spell.effect = DoLevelDepend(spell.effect,spell.level);
-        while (spell.effect.Contains("%d%")) spell.effect = DoDam(spell.effect);
-        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect,spell.level);
-        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect);
+        while (spell.effect.Contains("%el%")) spell.effect = DoElemental(spell.effect);
+        while (spell.effect.Contains("%d%")) spell.effect = DoDam(spell.effect,spell.damBonus);
+        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect,spell.level+spell.lvlBonus);
+        while (spell.effect.Contains("%add%")) spell.effect = DoAdd(spell.effect);        
+        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect);    
+        while (spell.effect.Contains("%opt%")) spell.effect = DoOption(spell.effect);    
     }
 
     private EffectKeyword returnEffectByName(string effectname)
@@ -332,14 +508,79 @@
         return null;
     }
 
-    private int spellHasEffect(EffectKeyword effect)
+    private SpellModifier returnSpellModifierByName(string modifiername)
+    {
+        if (spellmods != null)
+        {
+            foreach(SpellModifier modifier in spellmods)
+                if (modifier.name == modifiername)
+                    return modifier;
+        }
+        return null;
+    }
+
+    private int spellHasEffect(string effect)
     {
         if (spell.effects == null)
             return -1;
         for(int i = 0; i < spell.effects.Count; i++)
-            if (spell.effects[i].name == effect.name)
+            if (spell.effects[i].name == effect)
                 return i;
         return -1;
+    }
+
+    private bool spellHas(string[] effects)
+    {
+        if (spell.effects == null)
+                return false;
+        foreach(string effect in effects)
+        {
+            for(int i = 0; i < spell.modifiers.Count; i++)
+                if (spell.modifiers[i].name == effect)
+                    return true;
+            for(int i = 0; i < spell.effects.Count; i++)
+                if (spell.effects[i].name == effect )
+                    return true;
+        }
+        return false;
+    }
+
+    private int spellHasEffectAmmount(string effect)
+    {
+        if (spell.effects == null)
+            return 0;
+        for(int i = 0; i < spell.effects.Count; i++)
+            if (spell.effects[i].name == effect)
+                return spell.effects[i].ammount;
+        return 0;
+    }
+
+    private bool SpellHasEffectNonUnique()
+    {
+        foreach(EffectKeyword effect in spell.effects)
+            if(!effect.unique)
+                return true;
+        return false;
+    }
+
+    private int spellHasModifier(string modifier)
+    {
+        if (spell.modifiers == null)
+            return -1;
+        for(int i = 0; i < spell.modifiers.Count; i++)
+            if (spell.modifiers[i].name == modifier)
+                return i;
+        return -1;
+    }
+
+    private int spellHasModifierAmmount(string modifier)
+    {
+        if (spell.modifiers == null)
+            return 0;
+        for(int i = 0; i < spell.modifiers.Count; i++)
+            if (spell.modifiers[i].name == modifier)
+                return spell.modifiers[i].ammount;
+        return 0;
     }
 
     private async Task AddEffect(MouseEventArgs e, string effectname)
@@ -347,18 +588,55 @@
         EffectKeyword newEffect = returnEffectByName(effectname).Clone();
         if (newEffect == null)
             return;
-        int ei = spellHasEffect(newEffect);
+        int ei = spellHasEffect(newEffect.name);
         if (ei > -1)
             spell.effects[ei].ammount += 1;
         else
+        {
             spell.effects.Add(newEffect);
+            spell.effects.Last().ammount = 1;
+        }
         UpdateSpellInfo();
-        isChoosing = false;
+        showMode = 0;
     }
 
-    private async Task ToggleAddingEffects(MouseEventArgs e)
+    private async Task RemoveEffect(MouseEventArgs e, string effectname)
     {
-        isChoosing = true;
+        int ei = spellHasEffect(effectname);
+        if (ei == -1)
+            return;
+        if (spell.effects[ei].ammount > 1) spell.effects[ei].ammount--;
+        else spell.effects.Remove(spell.effects[ei]);
+        UpdateSpellInfo();
+        showMode = 0;
+    }
+
+    private async Task AddSpellModifier(MouseEventArgs e, string modname)
+    {
+        SpellModifier newModifier = returnSpellModifierByName(modname).Clone();
+        if (newModifier == null)
+            return;
+        int ei = spellHasModifier(newModifier.name);
+        if (ei > -1)
+            spell.modifiers[ei].ammount += 1;
+        else
+        {
+            spell.modifiers.Add(newModifier);
+            spell.modifiers.Last().ammount = 1;
+        }
+        UpdateSpellInfo();
+        showMode = 0;
+    }
+
+    private async Task RemoveSpellModifier(MouseEventArgs e, string modname)
+    {
+        int ei = spellHasModifier(modname);
+        if (ei == -1)
+            return;
+        if (spell.modifiers[ei].ammount > 1) spell.modifiers[ei].ammount--;
+        else spell.modifiers.Remove(spell.modifiers[ei]);
+        UpdateSpellInfo();
+        showMode = 0;
     }
 
     private async Task UpdateParams(string value, int type)
@@ -375,6 +653,14 @@
         UpdateSpellInfo();
     }
 
+    private async Task NormalizeParams()
+    {
+        MAGvalue = Math.Max(Math.Min(MAGvalue,99),0);
+        THMvalue = Math.Max(Math.Min(THMvalue,99),0);
+        EMMB = Math.Max(Math.Min(EMMB,99),-99);
+        spell.level = Math.Max(Math.Min(spell.level,6),0);
+    }
+
     private async Task UpdateBools(object value, int type)
     {
         bool newValue = System.Convert.ToBoolean(value);
@@ -388,16 +674,53 @@
 
     private async Task UpdateSpellInfo()
     {   
-        if (spell.effects.Count == 0)
-            return;
+        await NormalizeParams();
         while (spell.effects.Count > Math.Max(1,spell.level))
             spell.effects.Remove(spell.effects.Last());
-        spell.pointcost = spell.effects[0].cost;
-        spell.pointmax = 3+spell.level;
+        if (spell.effects.Count + spell.modifiers.Count > 0) blockSelection = true; else blockSelection = false;
         spell.manacost = 5*spell.level;
-        spell.school = spell.effects[0].school;
         spell.castDC = 10+4*spell.level;
-        spell.effect = spell.effects[0].description;
+        spell.pointmax = 3+spell.level;
+        spell.pointcost = 0;
+        spell.targetType = 0;
+        spell.rangeType = 0;
+        spell.damBonus = 0;
+        spell.lvlBonus = 0;
+        spell.effect = "";
+        string bonusEffect = "";
+        if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
+        spell.modifiers.Sort((p,q) => p.name.CompareTo(q.name));
+        foreach(SpellModifier mod in spell.modifiers)
+        {
+            string []? all_mods = mod.modifiers.Split(";");
+            foreach(string mod_pair in all_mods)
+            {
+                string[]? mod_parms = mod_pair.Split(":");
+                string value;
+                switch(mod_parms[1].Trim())
+                {
+                    case "amm": value = mod.ammount.ToString(); break;
+                    default: value = mod_parms[1].Trim(); break;
+                }
+                switch(mod_parms[0].Trim())
+                {
+                    case "level": spell.lvlBonus += System.Convert.ToInt32(value); break;
+                    case "damagesize": spell.damBonus += System.Convert.ToInt32(value); break;
+                    case "range": spell.rangeType = Math.Max(System.Convert.ToInt32(value),spell.rangeType); break;
+                    case "target": spell.targetType = Math.Max(System.Convert.ToInt32(value),spell.targetType); break;
+                    case "description": bonusEffect += "\r\n" + value; break;
+                    default: break;
+                }
+            }
+            spell.pointcost += mod.GetCost(mod.ammount, true);
+        }
+        spell.effects.Sort((p, q) => p.name.CompareTo(q.name));
+        foreach(EffectKeyword effect in spell.effects)
+        {
+            spell.pointcost += effect.GetCost(effect.ammount,true);
+            spell.effect += effect.description.Replace("%amm%",effect.ammount.ToString()) + ". ";
+        }
+        spell.effect += bonusEffect;
         UpdateSpellEffect(spell);                
         InvokeAsync(StateHasChanged);
     }
@@ -405,6 +728,6 @@
     private async Task ClearSpell(MouseEventArgs e)
     {
         spell = new Spell();
+        blockSelection = false;
     }
-
 }

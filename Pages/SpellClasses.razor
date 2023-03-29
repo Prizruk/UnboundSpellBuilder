@@ -1,0 +1,192 @@
+@code{
+    public class Spell
+    {
+        public string school;
+        public int level;
+        public int pointcost;
+        public int pointmax;
+        public int manacost;
+        public int castDC;
+        public int damBonus;
+        public int lvlBonus;
+        public string duration;
+        public int rangeType;
+        public int targetType;
+        public string effect;
+        public List<EffectKeyword> effects;
+        public List<SpellModifier> modifiers;
+
+        public Spell()
+        {
+            this.school = "";
+            this.level = 0;
+            this.pointcost = 0;
+            this.manacost = 0;
+            this.castDC = 10;
+            this.effect = "?";
+            this.pointmax = 3;
+            this.damBonus = 0;
+            this.lvlBonus = 0;
+            this.rangeType = 0;
+            this.targetType = 0;
+            this.duration = "?";
+            this.effects = new List<EffectKeyword>();
+            this.modifiers = new List<SpellModifier>();
+        }
+    }
+
+    public class Keyword
+    {
+        public string name { get; set; }
+        public string help { get; set; }
+        public string school { get; set; }
+        public int level { get; set; }
+        public string cost { get; set; }
+        public bool unique {get; set; }
+        public int ammount {get; set; }        
+
+        public Keyword()
+        {
+            this.cost = "99";
+            this.help = "";
+            this.level = 0;
+            this.name = "";
+            this.school = "";
+            this.unique = false;
+            this.ammount = 0;
+        }
+
+        public int GetCost(int ammount, bool full)
+        {
+            ammount = Math.Max(ammount,1);
+            string[]? cost_params = this.cost.Split(";");
+            int base_cost = System.Convert.ToInt32(cost_params[0].Trim());
+            if (cost_params.Length == 1)
+            {
+                if (full) return base_cost*ammount;
+                return base_cost;
+            }
+            int cost = base_cost;
+            string[]? cost_mods = cost_params[1].Split(":");
+            int param = System.Convert.ToInt32(cost_mods[1]);
+            switch(cost_mods[0])
+            {
+                case "ptt": if(full){int j=0;for(int i=1;i<ammount;i++){if(i%param==0) j++; cost+=base_cost+j;}} else{cost=base_cost+(ammount-1)/param;}; break;
+                case "max": if(ammount>param){cost = 999;} else{if(full) cost = base_cost*ammount; else cost = base_cost;}; break;
+                default: break;
+            }
+            return cost;
+        }
+    }
+
+    public class EffectKeyword : Keyword
+    {
+        public string description { get; set; }
+        public int duration{ get; set; }
+
+        public List<EffectModifier> modifiers;
+        public EffectKeyword()
+        {
+            this.cost = "99";
+            this.description = "www";
+            this.help = "wow";
+            this.level = 99;
+            this.name = "wow";
+            this.school = "";
+            this.unique = false;
+            this.duration = -1;
+            this.ammount = 0;
+            this.modifiers = new List<EffectModifier>();
+        }
+
+        public EffectKeyword Clone()
+        {
+            EffectKeyword newEffect = new EffectKeyword();
+            newEffect.cost = this.cost;
+            newEffect.description = this.description;
+            newEffect.help = this.help;
+            newEffect.level = this.level;
+            newEffect.name = this.name;
+            newEffect.school = this.school;
+            newEffect.unique = this.unique;
+            newEffect.ammount = this.ammount;
+            newEffect.duration = this.duration;
+            return newEffect;
+        }
+
+        public string GetName()
+        {
+            string desc = this.name;
+            if (this.ammount > 1)
+                desc += " x" + this.ammount.ToString();
+            if (this.modifiers.Count > 0){
+                desc += " (";
+                foreach(EffectModifier mod in this.modifiers)
+                {
+                    desc += mod.name;
+                    if (mod.ammount > 0)
+                        desc += " x" + mod.ammount.ToString();
+                    desc += ",";
+                }
+                desc += desc.Remove(desc.LastIndexOf(",")) + ")";
+            }
+            return desc;
+        }
+    }
+
+    public class EffectModifier : Keyword
+    {
+        public string modifiers {get;set;}
+
+        public EffectModifier()
+        {
+            this.cost = "99";
+            this.help = "";
+            this.level = 0;
+            this.name = "";
+            this.school = "";
+            this.modifiers = null;
+            this.unique = false;
+            this.ammount = 0;
+        }
+    }
+
+    public class SpellModifier : Keyword
+    {
+        public string modifiers {get;set;}
+
+        public SpellModifier()
+        {
+            this.cost = "0";
+            this.help = "";
+            this.level = 0;
+            this.name = "";
+            this.school = "";
+            this.modifiers = null;
+            this.unique = false;
+            this.ammount = 0;
+        }
+
+        public SpellModifier Clone()
+        {
+            SpellModifier newModifier = new SpellModifier();
+            newModifier.cost = this.cost;
+            newModifier.help = this.help;
+            newModifier.level = this.level;
+            newModifier.name = this.name;
+            newModifier.school = this.school;
+            newModifier.unique = this.unique;
+            newModifier.ammount = this.ammount;
+            newModifier.modifiers = this.modifiers;
+            return newModifier;
+        }
+
+        public string GetName()
+        {
+            string desc = this.name;
+            if (this.ammount > 1)
+                desc += " x" + this.ammount.ToString();
+            return desc;
+        }
+    }
+}

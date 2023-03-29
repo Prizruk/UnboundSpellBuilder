@@ -1,11 +1,62 @@
 ﻿[
   {
-    "description": "Deals %l0%2%/l0%%l+%%quad%0,25;0,5;2,14%/quad%%/l+%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%2%/l+%;%lvlm%%/mult% of damage",
+    "description": "Deals %mult%%l0%2%/l0%%l+%%quad%0,25;0,5;%el%1;2%/el%,14%/quad%%/l+%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%%el%1;2%/el%%/l+%;%lvlm%%/mult% of damage",
     "name": "Damage",
     "help": "Deals damage",
-    "school": "Destruction",
+    "school": "Destruction 0;Conjuration 0;Enchantment 0;Illusion 0;Necromancy 0",
     "level": 0,
-    "cost": 1,
-    "unique": true
+    "cost": "1",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Target object gains the broken condition for the duration of the spell. Attended objects receive a body save. Broken Item is a Tier 2 condition. Items with the broken condition give a -3 to any checks or stats the item gives",
+    "name": "Break",
+    "help": "Gives an item the Broken condition",
+    "school": "Destruction 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "The target of this spell effect must make a body save or have their DR lowered by %mult%%EMM%;%lvlmh%%/mult% for the duration of this spell",
+    "name": "Penetrating",
+    "help": "Decreases target's DR. The amount of DR lowered increased per spell level past the first",
+    "school": "Destruction 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "Creatures of the selected type take a %mult%-1;%amm%%/mult% to attack and damage against the target. Creatures of the designated type receive a Body save to ignore this effect each time they attack a target under the effects of this keyword",
+    "name": "Protection",
+    "help": "Protects the target from a chosen type of creature",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1;ptt:2",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Manifest a Physical Barrier with: %opt%%mult%5;%add%%lvl%;1%/add%%/mult%:+:HP;%add%%EMM%;%lvl%%/add%:%EMMh%:DR;%amm%%/opt%. Any damage absorbed by this DR takes away from the barrier's HP pool",
+    "name": "Barrier",
+    "help": "Creates a Physical Barrier that blocks damage",
+    "school": "Abjuration 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Gives the target a save (Enchantment and Illusion give Mind, Necromancy Body) or gain the Frightened condition. Frightened is a Tier 2 condition that is a fear effect that causes a character to be terrified and have Defensive Reduction 2 (AC,CMD,Saves)",
+    "name": "Frightened",
+    "help": "Target is frightened",
+    "school": "Enchantment 2;Illusion 2;Necromancy 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": 2
   }
 ]
