@@ -5,7 +5,7 @@
 <PageTitle>Spell Builder</PageTitle>
 
 @{
-    var allowedLevel = skillBonus <= 10 ? skillBonus/2 : Math.Min(6,(skillBonus-2)/2);
+    allowedLevel = skillBonus <= 10 ? skillBonus/2 : Math.Min(6,(skillBonus-2)/2);
     var showInfo = showMode == 0 ? "d-block" : "d-none";
     var showEffects = showMode == 1 ? "d-block" : "d-none";
     var showSpellMods = showMode == 2 ? "d-block" : "d-none";
@@ -233,11 +233,15 @@
 
     public bool IsEligeble(SpellModifier effect)
     {
+        Console.WriteLine(effect.school + " " + effect.level + " " + allowedLevel);
         if (effect.school.Contains("Universal") || spell.school == "Universal")
+        {
             if(effect.level > allowedLevel) return false;
+        }
         else
         {
             int ss = effect.school.IndexOf(spell.school);
+            Console.WriteLine(ss);
             if (ss < 0) return false;
             int se = effect.school.IndexOf(";",ss);
             if (se < 0) se = effect.school.Length - 1;
