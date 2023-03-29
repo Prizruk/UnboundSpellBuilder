@@ -1,0 +1,65 @@
+[
+ {
+   "name": "Invigorate",
+   "help": "Increases level scaling of the spell",
+   "school": "Destruction 1;Abjuration 1;Restoration 1",
+   "level": 1,
+   "cost": "1;ptt:1",
+   "unique": false,
+   "modifiers": "level: amm"
+ },
+ {
+   "name": "Energize",
+   "help": "Increases level scaling of the spell",
+   "school": "Universal",
+   "level": 1,
+   "cost": "1;max:2",
+   "unique": false,
+   "modifiers": "damagesize: amm"
+ },
+ {
+   "name": "Close Range",
+   "help": "Gives a spell range of close range",
+   "school": "Universal",
+   "level": 1,
+   "cost": "1",
+   "unique": true,
+   "modifiers": "range: 2; damagesize: -1"
+ },
+ {
+  "name": "Short Range",
+  "help": "Gives a spell range of short range",
+  "school": "Universal",
+  "level": 2,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "range: 3; damagesize: -1"
+},
+{
+  "name": "Line",
+  "help": "The spell now affects a line within range",
+  "school": "Universal",
+  "level": 1,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "target: 3; damagesize: -1"
+},
+{
+  "name": "Cube",
+  "help": "The spell now affects several cubes within range",
+  "school": "Universal",
+  "level": 1,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "target: 4; damagesize: -1"
+},
+{
+  "name": "Multi Target",
+  "help": "The spell now targets additional targets within half range of the first target",
+  "school": "Universal",
+  "level": 1,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "target: 9"
+}
+]
