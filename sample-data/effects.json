@@ -58,5 +58,15 @@
     "cost": "2",
     "unique": true,
     "duration": 2
+  },
+  {
+    "description": "This grants the target understanding of a situation or location. They do not take a penalty for being untrained in a skill for that situation. Gives a skill per purchase",
+    "name": "Adapt",
+    "help": "Skillfully adapt to the current situation",
+    "school": "Divination 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 13
   }
 ]
