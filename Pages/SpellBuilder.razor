@@ -6,6 +6,9 @@
 
 @{
     allowedLevel = skillBonus <= 10 ? skillBonus/2 : Math.Min(6,(skillBonus-2)/2);
+    minLevel = Math.Max(spell.pointcost - 3 - spell.pointBonus,0);
+    var efftableWidth = Math.Floor(100.0/7*(spell.level+1)) + "%";
+    var modtableWidth = Math.Floor(100.0/7*(allowedLevel+1)) + "%";
     var showInfo = showMode == 0 ? "d-block" : "d-none";
     var showEffects = showMode == 1 ? "d-block" : "d-none";
     var showSpellMods = showMode == 2 ? "d-block" : "d-none";
@@ -16,13 +19,27 @@
 <div class="effectChoice p-3 @showEffects" id="effectChoice">
     @if (effects != null)
     {
-        @foreach(var effect in effects)
-        {
-            @if(IsEligeble(effect))
+        <table width="@efftableWidth" style="table-layout: fixed;">
+        <tr style="vertical-align: top;">
+            @for(int i = 0; i <= spell.level;i++)
             {
-                <button class="btn btn-primary" style="margix: 1px;" @onclick="(args)=> AddEffect(args, effect.name)"><Tooltip Text=@effect.help>@effect.name</Tooltip></button><br>
+                <td>
+                <table style="width: 100%; table-layout: fixed;">
+                <tr><th style="text-align: center;">@i</th></tr>
+                @foreach(var effect in effects)
+                {
+                    @if(IsEligeble(effect,i))
+                    {
+                        <tr><td>
+                        <button class="btn btn-primary" style="margin: 1px; display: block; width: 100%" @onclick="(args)=> AddEffect(args, effect.name)"><Tooltip Text=@effect.help>@effect.name</Tooltip></button>
+                        </td></tr>
+                    }
+                }
+                </table>
+                </td>
             }
-        }
+        </tr>
+        </table>
     }
     <br><br><br>
     <button class="btn btn-primary" @onclick="(args)=>{showMode = 0;}"><Tooltip Text="Cancel adding an effect">Cancel</Tooltip></button>
@@ -31,13 +48,27 @@
 <div class="spellmodChoice p-3 @showSpellMods" id="spellmodChoice">
     @if (spellmods != null)
     {
-        @foreach (var spellmod in spellmods)
-        {
-            @if(IsEligeble(spellmod))
+        <table width="@modtableWidth" style="table-layout: fixed;">
+        <tr style="vertical-align: top;">
+            @for(int i = 0; i <= allowedLevel; i++)
             {
-                <button class="btn btn-primary" style="margix: 1px;" @onclick="(args)=> AddSpellModifier(args, spellmod.name)"><Tooltip Text=@spellmod.help>@spellmod.name</Tooltip></button><br>
-            }            
-        }
+                <td>
+                <table style="width: 100%; table-layout: fixed;">
+                <tr><th style="text-align: center;">@i</th></tr>
+                @foreach (var spellmod in spellmods)
+                {
+                    @if(IsEligeble(spellmod,i))
+                    {
+                        <tr><td>
+                        <button class="btn btn-primary" style="margin: 1px; display: block; width: 100%" @onclick="(args)=> AddSpellModifier(args, spellmod.name)"><Tooltip Text=@spellmod.help>@spellmod.name</Tooltip></button>
+                        </td></tr>
+                    }            
+                }
+                </table>
+                </td>
+            }
+        </tr>
+        </table>
     }
     <br><br><br>
     <button class="btn btn-primary" @onclick="(args)=>{showMode = 0;}"><Tooltip Text="Cancel adding a spell modifier">Cancel</Tooltip></button>
@@ -89,7 +120,7 @@
                     <td>
                         @foreach (var spellmod in spell.modifiers)
                         {
-                            <button class="btn btn-primary" style="margix: 1px; padding: 1px;" @onclick="(args)=> RemoveSpellModifier(args, spellmod.name)"><Tooltip Text="Remove Modifier">x</Tooltip></button> @spellmod.GetName()<br>
+                            <button class="btn btn-primary" style="margix: 1px; padding: 1px; margin-right: 3px;" @onclick="(args)=> RemoveSpellModifier(args, spellmod.name)"><Tooltip Text="Remove Modifier">x</Tooltip></button> @spellmod.GetName()<br>
                         }
                         @if(spell.modifiers.Count > 0)
                         {
@@ -97,7 +128,7 @@
                         }
                         @foreach(var effect in spell.effects)
                         {
-                            <button class="btn btn-primary" style="margix: 1px; padding: 1px;" @onclick="(args)=> RemoveEffect(args, effect.name)"><Tooltip Text="Remove Effect">x</Tooltip></button> @effect.GetName()<br>
+                            <button class="btn btn-primary" style="margix: 1px; padding: 1px; margin-right: 3px;" @onclick="(args)=> RemoveEffect(args, effect.name)"><Tooltip Text="Remove Effect">x</Tooltip></button> @effect.GetName()<br>
                         }                                    
                     </td>                    
                     <td>
@@ -125,9 +156,11 @@
                                 <td>EMM bonus:</td><td><input style="width: 25%;" type="number" name="EMMB" min="0" max="99" @bind="@EMMB" @oninput="@((e) => {UpdateParams((string)e.Value,3);})"></td>
                             </tr>
                             <tr>
-                                <td>Spell Level:</td><td><input style="width: 25%;" type="number" name="level" min="0" max="@allowedLevel" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
+                                <td>Spell Level:</td><td><input style="width: 25%;" type="number" name="level" min="@minLevel" max="@allowedLevel" @bind="@spell.level" @oninput="@((e) => {UpdateParams((string)e.Value,4);})"></td>
                             </tr>
                         </table>
+                        <br>
+                        <input type="checkbox" name="personalCheck" style="margin-right: 3px;" @bind="@isPersonal" @oninput="@((e) => {UpdateBools(e.Value,2);})" > <Tooltip Text="Spell can only affect the caster">Personal</Tooltip>
                     </td>
                     <td> 
                         <div>
@@ -157,9 +190,9 @@
                                 </tbody>
                             </table><br>           
                             <table align="left">
-                                <tr><th></th><th>Talents:</th></tr>
+                                <tr><th></th><th>Features:</th></tr>
                                 <tr>
-                                    <td><input type="checkbox" name="destructiveCheck" @bind="@hasDestructive" @oninput="@((e) => {UpdateBools(e.Value,1);})" ></td><td><Tooltip Text="Increases damage die of all destructive spells by one step">Destructive Spells</Tooltip></td>
+                                    <td><input type="checkbox" style="margin-right: 3px;" name="destructiveCheck" @bind="@hasDestructive" @oninput="@((e) => {UpdateBools(e.Value,1);})" ></td><td><Tooltip Text="Increases damage die of all destructive spells by one step">Destructive Spells</Tooltip></td>
                                 </tr>
                             </table>
                         </div>
@@ -181,6 +214,7 @@
     <button class="btn btn-primary" @onclick="(args) => ClearSpell(args)">Clear Spell</button>
 </div>
 
+
 @code 
 {
     private List<EffectKeyword> effects;
@@ -190,8 +224,11 @@
     public int showMode { get; set; }    
     [Parameter]
     public int allowedLevel {get;set;}
+    [Parameter]
+    public int minLevel {get;set;}
     public bool blockSelection {get;set;}
     public bool hasDestructive { get; set; }
+    public bool isPersonal { get; set; }
     public int MAGvalue { get; set;} = 10;
     public int THMvalue { get; set;} = 10;
     public int EMMB{ get; set;} = 0;
@@ -205,12 +242,13 @@
         effects = new List<EffectKeyword>(tempEffects);
         SpellModifier[]? tempSpellMods = await Http.GetFromJsonAsync<SpellModifier[]>("sample-data/spellmodifiers.json");
         spellmods = new List<SpellModifier>(tempSpellMods);
-        effects.Sort((p, q) => p.name.CompareTo(q.name));
+        effects.Sort((p,q) => p.name.CompareTo(q.name));
         spellmods.Sort((p, q) => p.name.CompareTo(q.name));
     }
 
-    public bool IsEligeble(EffectKeyword effect)
+    public bool IsEligeble(EffectKeyword effect, int i)
     {
+        if (effect.level != i) return false;
         if (spell.school == "Universal")
         {
             if (effect.level > spell.level) return false;
@@ -231,9 +269,9 @@
         return true;
     }
 
-    public bool IsEligeble(SpellModifier effect)
+    public bool IsEligeble(SpellModifier effect, int i)
     {
-        Console.WriteLine(effect.school + " " + effect.level + " " + allowedLevel);
+        if (effect.level != i) return false;
         if (effect.school.Contains("Universal") || spell.school == "Universal")
         {
             if(effect.level > allowedLevel) return false;
@@ -241,7 +279,6 @@
         else
         {
             int ss = effect.school.IndexOf(spell.school);
-            Console.WriteLine(ss);
             if (ss < 0) return false;
             int se = effect.school.IndexOf(";",ss);
             if (se < 0) se = effect.school.Length - 1;
@@ -286,16 +323,17 @@
     {
         string range = "";
         double EMM = (MAGvalue-10)/2 + EMMB;
+        double value = ReturnRangeNumber();
         switch(spell.rangeType)
         {
             case -1: range = "Personal"; break;
             case 0: range = "Touch"; break;
             case 1: range = "Reach"; break;
-            case 2: range = "Close (" + ((4 + Math.Floor(EMM/2))*5) + "ft.)"; break;
-            case 3: range = "Short (" + (4+EMM)*5 + "ft.)"; break;
-            case 4: range = "Medium (" + (10+EMM)*10 +"ft.)"; break;
-            case 5: range = "Long ("+ (10+EMM)*40 +"ft.)"; break;
-            case 6: range = "Very Long("+ (5+EMM)*100 +")"; break;
+            case 2: range = "Close (" + value + "ft.)"; break;
+            case 3: range = "Short (" + value + "ft.)"; break;
+            case 4: range = "Medium (" + value +"ft.)"; break;
+            case 5: range = "Long ("+ value +"ft.)"; break;
+            case 6: range = "Very Long("+ value +")"; break;
             default: range = "?"; break;
         }
         return range;
@@ -671,6 +709,7 @@
         switch(type)
         {
             case 1: hasDestructive = newValue; break;
+            case 2: isPersonal = newValue; break;
             default: return;
         }
         UpdateSpellInfo();
@@ -684,7 +723,10 @@
         if (spell.effects.Count + spell.modifiers.Count > 0) blockSelection = true; else blockSelection = false;
         spell.manacost = 5*spell.level;
         spell.castDC = 10+4*spell.level;
-        spell.pointmax = 3+spell.level;
+        spell.pointBonus = 0;
+        if (isPersonal)
+            spell.pointBonus++;
+        spell.pointmax = 3+spell.level+spell.pointBonus;
         spell.pointcost = 0;
         spell.targetType = 0;
         spell.rangeType = 0;
@@ -692,7 +734,6 @@
         spell.lvlBonus = 0;
         spell.effect = "";
         string bonusEffect = "";
-        if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
         spell.modifiers.Sort((p,q) => p.name.CompareTo(q.name));
         foreach(SpellModifier mod in spell.modifiers)
         {
@@ -725,6 +766,8 @@
             spell.effect += effect.description.Replace("%amm%",effect.ammount.ToString()) + ". ";
         }
         spell.effect += bonusEffect;
+        if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
+        if (isPersonal) {spell.rangeType = -1; spell.targetType = -1;};
         UpdateSpellEffect(spell);                
         InvokeAsync(StateHasChanged);
     }
