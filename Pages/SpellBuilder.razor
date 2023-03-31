@@ -416,7 +416,7 @@
         string[]? forMult = orig.Substring(startMult,endMult-startMult).Replace("%mult%","").Replace("%/mult%","").Split(";");
         double answer = 1;
         foreach(string mult in forMult){
-            answer *= System.Convert.ToDouble(mult.Replace(".",","));
+            answer *= System.Convert.ToDouble(mult.Replace(",","."));
         }
         orig = orig.Remove(startMult, endMult - startMult + "%/mult%".Length).Insert(startMult,Math.Floor(answer).ToString());
         return orig;
@@ -442,8 +442,8 @@
         int startQuad = orig.IndexOf("%quad%");
         int endQuad = orig.IndexOf("%/quad%",startQuad);
         string[]? forQuad = orig.Substring(startQuad,endQuad-startQuad).Replace("%quad%","").Replace("%/quad%","").Split(";");
-        double x = System.Convert.ToDouble(forQuad[3]);
-        double answer = Math.Round(System.Convert.ToDouble(forQuad[0])*Math.Pow(x,2) + System.Convert.ToDouble(forQuad[1])*x + System.Convert.ToDouble(forQuad[2]));
+        double x = System.Convert.ToDouble(forQuad[3].Replace(",","."));
+        double answer = Math.Round(System.Convert.ToDouble(forQuad[0].Replace(",","."))*Math.Pow(x,2) + System.Convert.ToDouble(forQuad[1].Replace(",","."))*x + System.Convert.ToDouble(forQuad[2].Replace(",",".")));
         orig = orig.Remove(startQuad, endQuad - startQuad + "%/quad%".Length).Insert(startQuad,answer.ToString());
         return orig;
     }
@@ -589,7 +589,7 @@
         int ps = orig.IndexOf("%pow%");
         int pe = orig.IndexOf("%/pow%",ps);
         string[] values = orig.Substring(ps,pe-ps).Replace("%pow%","").Split(";");
-        double value = Math.Pow(System.Convert.ToDouble(values[0]),System.Convert.ToDouble(values[1]));
+        double value = Math.Pow(System.Convert.ToDouble(values[0].Replace(",",".")),System.Convert.ToDouble(values[1].Replace(",",".")));
         orig = orig.Remove(ps,pe-ps+"%/pow%".Length).Insert(ps,value.ToString());
         return orig;
     }
@@ -862,7 +862,7 @@
         foreach(EffectKeyword effect in spell.effects)
         {
             spell.pointcost += effect.GetCost(effect.ammount,true,spell.level);
-            spell.effect.Add(effect.description.Replace("%amm%",effect.ammount.ToString()).Replace(",","."));
+            spell.effect.Add(effect.description.Replace("%amm%",effect.ammount.ToString()));
         }
         spell.effect.Add(bonusEffect);
         if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
