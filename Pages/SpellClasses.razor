@@ -57,7 +57,7 @@
             this.ammount = 0;
         }
 
-        public int GetCost(int ammount, bool full)
+        public int GetCost(int ammount, bool full, int spelllevel)
         {
             ammount = Math.Max(ammount,1);
             string[]? cost_params = this.cost.Split(";");
@@ -74,6 +74,24 @@
             {
                 case "ptt": if(full){int j=0;for(int i=1;i<ammount;i++){if(i%param==0) j++; cost+=base_cost+j;}} else{cost=base_cost+(ammount-1)/param;}; break;
                 case "max": if(ammount>param){cost = 999;} else{if(full) cost = base_cost*ammount; else cost = base_cost;}; break;
+                case "lvl": cost = Math.Max(1,base_cost + spelllevel/param); break;
+                case "alt": if(full){for(int i=1;i<ammount;i++) cost+=param;} else{cost=param;}; break;
+                case "insp": 
+                {
+                    if (ammount == 1) {cost = 1; break;};
+                    if (ammount == 2) {if (full) cost = 2; else cost = 1; break;};
+                    int[] lastTwo = {1,1};
+                    int last = 2;
+                    int sum = 2;
+                    for (int i = 2; i < ammount; i++)
+                    {
+                        last = lastTwo[0] + lastTwo[1];
+                        lastTwo[0] = lastTwo[1];
+                        lastTwo[1] = last;
+                        sum += last;                        
+                    }
+                    if(full) cost = sum; else cost = last;
+                }; break;
                 default: break;
             }
             return cost;

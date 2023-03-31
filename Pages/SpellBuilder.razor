@@ -202,7 +202,7 @@
         </table>
     }
     <br><br>
-    @if(spell.school != "")
+    @if(spell.school != "" && skillBonus > 0)
     {
     <button class="btn btn-primary" style="margin: 1px;" @onclick="(args)=>{showMode = 2;}"><Tooltip Text="Add an Spell Modifier">Add Modifier</Tooltip></button>
         @if (spell.effects.Count == 0 || SpellHasEffectNonUnique() || spell.effects.Count < spell.level)
@@ -210,6 +210,23 @@
             <button class="btn btn-primary" style="margin: 1px;" @onclick="(args)=>{showMode = 1;}"><Tooltip Text="Add an Effect or Condition to the spell">Add Effect</Tooltip></button>
         }
     }
+    @if(spell.school == "" || skillBonus == 0)
+    {
+        if(spell.school == "" && skillBonus > 0)
+        {
+            <div>Choose the Spell School</div>
+        }            
+        if(spell.school != "" && skillBonus == 0)
+        {
+            <div>Choose the Skill level</div>
+        }            
+        if(spell.school == "" && skillBonus == 0)
+        {
+            <div>Choose the Spell School and Skill level</div>
+        }            
+
+    }
+        
     <br><br>
     <button class="btn btn-primary" @onclick="(args) => ClearSpell(args)">Clear Spell</button>
 </div>
@@ -248,6 +265,7 @@
 
     public bool IsEligeble(EffectKeyword effect, int i)
     {
+        if (spell.school.Trim() == "") return false;
         if (effect.level != i) return false;
         if (spell.school == "Universal")
         {
@@ -262,7 +280,7 @@
             int lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
             if (lv > spell.level) return false;
         }
-        if(effect.GetCost(spellHasEffectAmmount(effect.name)+1,false) > spell.pointmax-spell.pointcost)
+        if(effect.GetCost(spellHasEffectAmmount(effect.name)+1,false,spell.level) > spell.pointmax-spell.pointcost)
             return false;
         if(effect.unique && spellHasEffect(effect.name) > -1)
             return false;
@@ -271,6 +289,7 @@
 
     public bool IsEligeble(SpellModifier effect, int i)
     {
+        if (spell.school.Trim() == "") return false;
         if (effect.level != i) return false;
         if (effect.school.Contains("Universal") || spell.school == "Universal")
         {
@@ -285,7 +304,7 @@
             int lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
             if (lv > allowedLevel) return false;
         }
-        if(effect.GetCost(spellHasModifierAmmount(effect.name)+1,false) > spell.pointmax-spell.pointcost)
+        if(effect.GetCost(spellHasModifierAmmount(effect.name)+1,false, spell.level) > spell.pointmax-spell.pointcost)
             return false;
         if(effect.unique && spellHasModifier(effect.name) > -1)
             return false;
@@ -303,18 +322,22 @@
         }
         switch(durationType)
         {
+            case -5: duration = "Sustained"; break;
+            case -4: duration = "Sustained + Special"; break;
+            case -3: duration = "Special"; break;
+            case -2: duration = "Until the action is complete"; break;
             case -1: duration += "?"; break;
             case 0: duration += "Instant"; break;
             case 1: duration += "1 round"; break;
             case 2: duration += EMM + " rounds"; break;
             case 3: duration += EMM + " minutes"; break;
             case 4: duration += EMM*10 + " minutes"; break;
-            case 5: duration += EMM*10 + " hours"; break;
+            case 5: duration += EMM + " hours"; break;
             case 6: duration += EMM + " days"; break;
             case 7: duration += EMM + " weeks"; break;
             case 8: duration += EMM + " months"; break;
             case 9: duration += EMM + " years"; break;
-            default: if(durationType>9) duration = "semi-permanent"; else duration = "unknown"; break;
+            default: if(durationType>=10) duration = "semi-permanent"; else duration = "unknown"; break;
         }
         return duration;
     }
@@ -328,7 +351,7 @@
         {
             case -1: range = "Personal"; break;
             case 0: range = "Touch"; break;
-            case 1: range = "Reach"; break;
+            case 1: range = "Reach (" + value + "ft.)"; break;
             case 2: range = "Close (" + value + "ft.)"; break;
             case 3: range = "Short (" + value + "ft.)"; break;
             case 4: range = "Medium (" + value +"ft.)"; break;
@@ -397,7 +420,9 @@
     {
         int startAdd = orig.IndexOf("%add%");
         int endAdd = orig.IndexOf("%/add%",startAdd);
-        string[]? forAdd = orig.Substring(startAdd,endAdd-startAdd).Replace("%add%","").Replace("%/add%","").Split(";");
+        string forCheck = orig.Substring(startAdd,endAdd-startAdd).Replace("%add%","").Replace("%/add%","");
+        while (forCheck.Contains("%mult%")) forCheck = DoMult(forCheck);
+        string[]? forAdd = forCheck.Split(";");
         int answer = 0;
         foreach(string add in forAdd){
             answer += System.Convert.ToInt32(add);
@@ -406,12 +431,13 @@
         return orig;
     }
 
-    private string DoQuad(string orig, int level)
+    private string DoQuad(string orig)
     {
         int startQuad = orig.IndexOf("%quad%");
         int endQuad = orig.IndexOf("%/quad%",startQuad);
         string[]? forQuad = orig.Substring(startQuad,endQuad-startQuad).Replace("%quad%","").Replace("%/quad%","").Split(";");
-        double answer = Math.Round(System.Convert.ToDouble(forQuad[0])*Math.Pow(level,2) + System.Convert.ToDouble(forQuad[1])*level + System.Convert.ToDouble(forQuad[2]));
+        double x = System.Convert.ToDouble(forQuad[3]);
+        double answer = Math.Round(System.Convert.ToDouble(forQuad[0])*Math.Pow(x,2) + System.Convert.ToDouble(forQuad[1])*x + System.Convert.ToDouble(forQuad[2]));
         orig = orig.Remove(startQuad, endQuad - startQuad).Replace("%/quad%","").Insert(startQuad,answer.ToString());
         return orig;
     }
@@ -495,13 +521,72 @@
         int es = orig.IndexOf("%el%");
         int ee = orig.IndexOf("%/el%");
         string[] values = orig.Substring(es,ee-es).Replace("%/el%","").Split(";");
-        if (spellHas(new string[] {"Basic Energy","Uncommon Energy","Rare Energy","Ancient Energy","Necrotic","Negative Energy","Positive Energy","Poison","Psychic","Primal Energy","Shade","Astral","Holy","Unholy"}))
+        if (spellHas(new string[] {"Basic Energy","Uncommon Energy","Rare Energy","Ancient Energy","Necrotic","Poison","Psychic","Primal Energy","Shade","Astral","Holy","Unholy"}))
             orig = orig.Remove(es,ee-es+"%/el%".Length).Insert(es,values[0]);
         else
             orig = orig.Remove(es,ee-es+"%/el%".Length).Insert(es,values[1]);
         return orig;
     }
 
+    private string DoElementalDamage(string orig)
+    {
+        string damage = "physical";
+        if(spellHasModifier("Basic Energy") > -1)
+            damage = "tier 1 elemental";
+        if(spellHasModifier("Uncommon Energy") > -1)
+            damage = "tier 2 energy";  
+        if(spellHasModifier("Poison") > -1)
+            damage = "poison 2";
+        if(spellHasModifier("Rare Energy") > -1)
+            damage = "tier 3 energy";    
+        if(spellHasModifier("Necrotic") > -1)
+            damage = "necrotic 3";
+        if(spellHasModifier("Psychic") > -1)
+            damage = "psychic 3";
+        if(spellHasModifier("Ancient Energy") > -1)
+            damage = "tier 4 elemental";  
+        if(spellHasModifier("Primal Energy") > -1)
+            damage = "primal 4";
+        if(spellHasModifier("Shade") > -1)
+            damage = "shade 4";
+        if(spellHasModifier("Astral") > -1)
+            damage = "astral 4";
+        if(spellHasModifier("Holy") > -1)
+            damage = "holy 4";
+        if(spellHasModifier("Unholy") > -1)
+            damage = "unholy 4";
+        return orig.Replace("%eld%",damage);
+    }
+
+    private string DoMax(string orig)
+    {
+        int ms = orig.IndexOf("%max%");
+        int me = orig.IndexOf("%/max%",ms);
+        string[] options = orig.Substring(ms,me-ms).Replace("%max%","").Split(";");
+        int value = System.Convert.ToInt32(options[0]) > System.Convert.ToInt32(options[1]) ? System.Convert.ToInt32(options[0]) : System.Convert.ToInt32(options[1]);
+        orig = orig.Remove(ms,me-ms+"%/max%".Length).Insert(ms,value.ToString());
+        return orig;
+    }
+
+    private string DoMin(string orig)
+    {
+        int ms = orig.IndexOf("%min%");
+        int me = orig.IndexOf("%/min%",ms);
+        string[] options = orig.Substring(ms,me-ms).Replace("%min%","").Split(";");
+        int value = System.Convert.ToInt32(options[0]) < System.Convert.ToInt32(options[1]) ? System.Convert.ToInt32(options[0]) : System.Convert.ToInt32(options[1]);
+        orig = orig.Remove(ms,me-ms+"%/min%".Length).Insert(ms,value.ToString());
+        return orig;
+    }
+
+    private string DoPow(string orig)
+    {
+        int ps = orig.IndexOf("%pow%");
+        int pe = orig.IndexOf("%/pow%",ps);
+        string[] values = orig.Substring(ps,pe-ps).Replace("%pow%","").Split(";");
+        double value = Math.Pow(System.Convert.ToDouble(values[0]),System.Convert.ToDouble(values[1]));
+        orig = orig.Remove(ps,pe-ps+"%/pow%".Length).Insert(ps,value.ToString());
+        return orig;
+    }
     private string DoOption(string orig)
     {
         int os = orig.IndexOf("%opt%");
@@ -530,12 +615,17 @@
         if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",(spell.level+spell.lvlBonus).ToString());
         if (spell.effect.Contains("%lvlm%")) spell.effect = spell.effect.Replace("%lvlm%",(Math.Max(spell.level,1)+spell.lvlBonus).ToString());
         if (spell.effect.Contains("%lvlmh%")) spell.effect = spell.effect.Replace("%lvlmh%", (System.Convert.ToDouble(1+spell.lvlBonus+Math.Max(spell.level,1))/2).ToString());        
+        if (spell.effect.Contains("%srb%")) spell.effect = spell.effect.Replace("%srb", skillBonus.ToString());
         if (spell.effect.Contains("%l0%")) spell.effect = DoLevelDepend(spell.effect,spell.level);
+        if (spell.effect.Contains("%eld%")) spell.effect = DoElementalDamage(spell.effect);
         while (spell.effect.Contains("%el%")) spell.effect = DoElemental(spell.effect);
         while (spell.effect.Contains("%d%")) spell.effect = DoDam(spell.effect,spell.damBonus);
-        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect,spell.level+spell.lvlBonus);
-        while (spell.effect.Contains("%add%")) spell.effect = DoAdd(spell.effect);        
-        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect);    
+        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect);
+        while (spell.effect.Contains("%add%")) spell.effect = DoAdd(spell.effect); 
+        while (spell.effect.Contains("%pow%")) spell.effect = DoPow(spell.effect);        
+        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect); 
+        while (spell.effect.Contains("%max%")) spell.effect = DoMax(spell.effect);
+        while (spell.effect.Contains("%min%")) spell.effect = DoMin(spell.effect);
         while (spell.effect.Contains("%opt%")) spell.effect = DoOption(spell.effect);    
     }
 
@@ -753,17 +843,17 @@
                     case "damagesize": spell.damBonus += System.Convert.ToInt32(value); break;
                     case "range": spell.rangeType = Math.Max(System.Convert.ToInt32(value),spell.rangeType); break;
                     case "target": spell.targetType = Math.Max(System.Convert.ToInt32(value),spell.targetType); break;
-                    case "description": bonusEffect += "\r\n" + value; break;
+                    case "description": bonusEffect += value.Replace("%amm%",mod.ammount.ToString()); break;
                     default: break;
                 }
             }
-            spell.pointcost += mod.GetCost(mod.ammount, true);
+            spell.pointcost += mod.GetCost(mod.ammount, true, spell.level);
         }
         spell.effects.Sort((p, q) => p.name.CompareTo(q.name));
         foreach(EffectKeyword effect in spell.effects)
         {
-            spell.pointcost += effect.GetCost(effect.ammount,true);
-            spell.effect += effect.description.Replace("%amm%",effect.ammount.ToString()) + ". ";
+            spell.pointcost += effect.GetCost(effect.ammount,true,spell.level);
+            spell.effect += effect.description.Replace("%amm%",effect.ammount.ToString()) + ".\r\n";
         }
         spell.effect += bonusEffect;
         if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
