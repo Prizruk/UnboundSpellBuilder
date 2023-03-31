@@ -300,8 +300,9 @@
             int ss = effect.school.IndexOf(spell.school);
             if (ss < 0) return false;
             int se = effect.school.IndexOf(";",ss);
-            if (se < 0) se = effect.school.Length - 1;
-            int lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
+            int lv;
+            if (se < 0) lv = System.Convert.ToInt32(effect.school.Last());
+            else lv = System.Convert.ToInt32(effect.school.Substring(se-1,1));
             if (lv > allowedLevel) return false;
         }
         if(effect.GetCost(spellHasModifierAmmount(effect.name)+1,false, spell.level) > spell.pointmax-spell.pointcost)

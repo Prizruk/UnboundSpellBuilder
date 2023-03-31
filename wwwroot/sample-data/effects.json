@@ -920,7 +920,7 @@
     "duration": 5
   },
   {
-    "description": "A target is treated as if it ate a %amm% meal(s) or %amm%/4th of days' worth of water. This can only provide water in terrains that have an excess amount of water",
+    "description": "A target is treated as if it ate %amm% meal(s) or %amm%/4th of days' worth of water. This can only provide water in terrains that have an excess amount of water",
     "name": "Sustenance",
     "help": "Gives sustenance to a creature",
     "school": "Restoration 1",
