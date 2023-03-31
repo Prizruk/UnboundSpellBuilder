@@ -115,7 +115,11 @@
                         <b>Mana:</b> @spell.manacost<br>
                         <b>Cast DC:</b> @spell.castDC<br>
                         <hr>
-                        @spell.effect
+                        @foreach(string effect in spell.effect)
+                        {
+                            @effect<br>
+                        }
+                        
                     </td>
                     <td>
                         @foreach (var spellmod in spell.modifiers)
@@ -267,6 +271,7 @@
     {
         if (spell.school.Trim() == "") return false;
         if (effect.level != i) return false;
+        if (spell.effects.Count >= Math.Max(spell.level,1) && (effect.unique || spellHasEffect(effect.name) == -1)) return false;
         if (spell.school == "Universal")
         {
             if (effect.level > spell.level) return false;
@@ -611,23 +616,26 @@
 
     private void UpdateSpellEffect(Spell spell)
     {
-        if (spell.effect.Contains("%EMM%")) spell.effect = spell.effect.Replace("%EMM%",((MAGvalue-10)/2+EMMB).ToString());
-        if (spell.effect.Contains("%EMMh%")) spell.effect = spell.effect.Replace("%EMMh%",(((MAGvalue-10)/2+EMMB)/2).ToString());
-        if (spell.effect.Contains("%lvl%")) spell.effect = spell.effect.Replace("%lvl%",(spell.level+spell.lvlBonus).ToString());
-        if (spell.effect.Contains("%lvlm%")) spell.effect = spell.effect.Replace("%lvlm%",(Math.Max(spell.level,1)+spell.lvlBonus).ToString());
-        if (spell.effect.Contains("%lvlmh%")) spell.effect = spell.effect.Replace("%lvlmh%", (System.Convert.ToDouble(1+spell.lvlBonus+Math.Max(spell.level,1))/2).ToString());        
-        if (spell.effect.Contains("%srb%")) spell.effect = spell.effect.Replace("%srb", skillBonus.ToString());
-        if (spell.effect.Contains("%l0%")) spell.effect = DoLevelDepend(spell.effect,spell.level);
-        if (spell.effect.Contains("%eld%")) spell.effect = DoElementalDamage(spell.effect);
-        while (spell.effect.Contains("%el%")) spell.effect = DoElemental(spell.effect);
-        while (spell.effect.Contains("%d%")) spell.effect = DoDam(spell.effect,spell.damBonus);
-        while (spell.effect.Contains("%quad%")) spell.effect = DoQuad(spell.effect);
-        while (spell.effect.Contains("%add%")) spell.effect = DoAdd(spell.effect); 
-        while (spell.effect.Contains("%pow%")) spell.effect = DoPow(spell.effect);        
-        while (spell.effect.Contains("%mult%")) spell.effect = DoMult(spell.effect); 
-        while (spell.effect.Contains("%max%")) spell.effect = DoMax(spell.effect);
-        while (spell.effect.Contains("%min%")) spell.effect = DoMin(spell.effect);
-        while (spell.effect.Contains("%opt%")) spell.effect = DoOption(spell.effect);    
+        for(int i = 0;i < spell.effect.Count; i++)
+        {
+            if (spell.effect[i].Contains("%EMM%")) spell.effect[i] = spell.effect[i].Replace("%EMM%",((MAGvalue-10)/2+EMMB).ToString());
+            if (spell.effect[i].Contains("%EMMh%")) spell.effect[i] = spell.effect[i].Replace("%EMMh%",(((MAGvalue-10)/2+EMMB)/2).ToString());
+            if (spell.effect[i].Contains("%lvl%")) spell.effect[i] = spell.effect[i].Replace("%lvl%",(spell.level+spell.lvlBonus).ToString());
+            if (spell.effect[i].Contains("%lvlm%")) spell.effect[i] = spell.effect[i].Replace("%lvlm%",(Math.Max(spell.level,1)+spell.lvlBonus).ToString());
+            if (spell.effect[i].Contains("%lvlmh%")) spell.effect[i] = spell.effect[i].Replace("%lvlmh%", (System.Convert.ToDouble(1+spell.lvlBonus+Math.Max(spell.level,1))/2).ToString());        
+            if (spell.effect[i].Contains("%srb%")) spell.effect[i] = spell.effect[i].Replace("%srb", skillBonus.ToString());
+            if (spell.effect[i].Contains("%l0%")) spell.effect[i] = DoLevelDepend(spell.effect[i],spell.level);
+            if (spell.effect[i].Contains("%eld%")) spell.effect[i] = DoElementalDamage(spell.effect[i]);
+            while (spell.effect[i].Contains("%el%")) spell.effect[i] = DoElemental(spell.effect[i]);
+            while (spell.effect[i].Contains("%d%")) spell.effect[i] = DoDam(spell.effect[i],spell.damBonus);
+            while (spell.effect[i].Contains("%quad%")) spell.effect[i] = DoQuad(spell.effect[i]);
+            while (spell.effect[i].Contains("%add%")) spell.effect[i] = DoAdd(spell.effect[i]); 
+            while (spell.effect[i].Contains("%pow%")) spell.effect[i] = DoPow(spell.effect[i]);        
+            while (spell.effect[i].Contains("%mult%")) spell.effect[i] = DoMult(spell.effect[i]); 
+            while (spell.effect[i].Contains("%max%")) spell.effect[i] = DoMax(spell.effect[i]);
+            while (spell.effect[i].Contains("%min%")) spell.effect[i] = DoMin(spell.effect[i]);
+            while (spell.effect[i].Contains("%opt%")) spell.effect[i] = DoOption(spell.effect[i]);    
+        }
     }
 
     private EffectKeyword returnEffectByName(string effectname)
@@ -823,7 +831,7 @@
         spell.rangeType = 0;
         spell.damBonus = 0;
         spell.lvlBonus = 0;
-        spell.effect = "";
+        spell.effect = new List<string>();
         string bonusEffect = "";
         spell.modifiers.Sort((p,q) => p.name.CompareTo(q.name));
         foreach(SpellModifier mod in spell.modifiers)
@@ -854,9 +862,9 @@
         foreach(EffectKeyword effect in spell.effects)
         {
             spell.pointcost += effect.GetCost(effect.ammount,true,spell.level);
-            spell.effect += effect.description.Replace("%amm%",effect.ammount.ToString()) + ".\r\n";
+            spell.effect.Add(effect.description.Replace("%amm%",effect.ammount.ToString()));
         }
-        spell.effect += bonusEffect;
+        spell.effect.Add(bonusEffect);
         if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
         if (isPersonal) {spell.rangeType = -1; spell.targetType = -1;};
         UpdateSpellEffect(spell);                

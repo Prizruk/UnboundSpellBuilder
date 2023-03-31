@@ -13,7 +13,7 @@
         public string duration;
         public int rangeType;
         public int targetType;
-        public string effect;
+        public List<string> effect;
         public List<EffectKeyword> effects;
         public List<SpellModifier> modifiers;
 
@@ -24,7 +24,7 @@
             this.pointcost = 0;
             this.manacost = 0;
             this.castDC = 10;
-            this.effect = "?";
+            this.effect = new List<string>();
             this.pointmax = 3;
             this.damBonus = 0;
             this.lvlBonus = 0;
