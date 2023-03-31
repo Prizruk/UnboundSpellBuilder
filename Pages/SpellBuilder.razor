@@ -296,6 +296,7 @@
     {
         if (spell.school.Trim() == "") return false;
         if (effect.level != i) return false;
+        if (effect.name == "Invigorate" && spell.level == 0) return false;
         if (effect.school.Contains("Universal") || spell.school == "Universal")
         {
             if(effect.level > allowedLevel) return false;
