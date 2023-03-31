@@ -1,6 +1,6 @@
 ﻿[
   {
-    "description": "Deals %mult%%l0%2%/l0%%l+%%quad%0,25;0,5;%el%1;2%/el%,14%/quad%%/l+%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%%el%1;2%/el%%/l+%;%lvlm%%/mult% of damage",
+    "description": "Deals %mult%%l0%2%/l0%%l+%%quad%0,25;0,5;%el%1;2%/el%,14;%lvl%%/quad%%/l+%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%%el%1;2%/el%%/l+%;%lvlm%%/mult% of %eld% damage",
     "name": "Damage",
     "help": "Deals damage",
     "school": "Destruction 0;Conjuration 0;Enchantment 0;Illusion 0;Necromancy 0",
@@ -68,5 +68,925 @@
     "cost": "2",
     "unique": false,
     "duration": 13
+  },
+  {
+    "description": "Gives the target %mult%%EMM%;%add%%lvl%;1%/add%;%amm%%/mult% temporary HP",
+    "name": "Absorb",
+    "help": "Gives temporary hit points",
+    "school": "Restoration 0",
+    "level": 0,
+    "cost": "1;ptt:2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Magical force performs a simple task with a skill rank of 0, and a skill modifier of %EMM%. Required tools and materials must be present. For each Action keyword taken either increase the skill rank by 1, increase the complexity of the action by 1 or increase the number of individual forces performing the action by 1",
+    "name": "Action",
+    "help": "Perform an action automatically with magic",
+    "school": "Ordinary 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": -2
+  },
+  {
+    "description": "Animates a single object to perform a single task. Object moves with a base speed of 30ft. Object has a skill rank of %mult%%add%0;-1;ammount%/add%;2%/mult% and modifier bonus of %EMM% in addition to the objects quality and enchantment benefits. In combat its duration is 3 steps lower",
+    "name": "Animate Object",
+    "help": "Animates an object to perform a task",
+    "school": "Transmutation 0",
+    "level": 0,
+    "cost": "2",
+    "unique": false,
+    "duration": 5
+  },
+  {
+    "description": "Target takes %add%1;%lvl%%/add%%d%d8%/d% bleed damage. For %EMM% rounds this bleed can't be stopped, unless the appropriate skill check also beats the Save DC",
+    "name": "Bleed",
+    "help": "Deals bleed damage",
+    "school": "Necromancy 0",
+    "level": 0,
+    "cost": "1",
+    "unique": true,
+    "duration": -3
+  },
+  {
+    "description": "Remove a specified negative condition on the target as long as the condition's level is equal or lower than the spell level. Additionally, the Condition Removal keyword must be purchased a number of times equal to the effective spell level of the effect to be able to remove it. If the condition is from a magical or supernatural source you must make a restoration skill check to remove the condition",
+    "name": "Condition Removal",
+    "help": "Removes a negative condition",
+    "school": "Restoration 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 0
+  },
+  {
+    "description": "Conjure a single piece of ammunition for a medium weapon that deals %eld% damage. Each additional time Conjure Ammunition keyword is purchased either increase the number of pieces of ammunition created by %EMM% or increase the size of the weapon by 1 step",
+    "name": "Conjure Ammunition",
+    "help": "Creates Ammunition",
+    "school": "Conjuration 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Conjure a single mundane implement that has no moving parts and can't be used as a weapon. It remains until you no longer have use of it and can be any object less than one cubic foot in volume. Each additional purchase of Conjure Implement either increases the number of items by %EMM% or the cubic feet by %EMM%",
+    "name": "Conjure Implement",
+    "help": "Creates an Implement",
+    "school": "Conjuration 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 15
+  },
+  {
+    "description": "Conjures either mundane or impactful material.\r\nMundane has duration of Sustained + %mult%%EMM%;10%/mult% minutes (or Permanent if purchased twice) and creates %add%12;%mult%12;%lvl%;%EMM%%/mult%%/add% lf. Oz of a liquid, %add%5;%mult%5;%lvl%;%EMM%%/mult%%/add% ft. of bright light and %add%10;%mult%10;%lvl%;%EMM%%/mult%%/add% ft. of dim light, or %add%5;%mult%5;%lvl%;%EMM%%/mult%%/add% lb. of solid material.\r\nImpactful materials are any materials that you can give you beneficial mechanical effect during battle. Duration is Sustained + %EMM% rounds. Available material is based on spell level",
+    "name": "Conjure Material",
+    "help": "Creates Material",
+    "school": "Conjuration 0",
+    "level": 0,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": -4
+  },
+  {
+    "description": "Gives the target a save (Enchantment and Illusion give Mind, Conjuration Body) or gain the Dazzled condition. Dazzled is a Tier 1 condition that inhibits a character's ability to react and gives Active Reduction 1 (Attacks and Skill checks)" ,
+    "name": "Dazzle",
+    "help": "Dazzles the target",
+    "school": "Conjuration 0; Enchantment 0; Illusion 0",
+    "level": 0,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Target gains Reinforced %amm% to a single type of save or increases their DR by %add%1;%amm%%/add%. You can choose to affect more than one type of save by increasing the cost of the keyword by 1 for each additional type of save. You may limit what the bonus applies against (ie DR Silver or Will against Mind effects) which decreases the cost of the keyword by 1",
+    "name": "Fortify",
+    "help": "Increases Save or DR",
+    "school": "Abjuration 0",
+    "level": 0,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Targeted object's hardness increases by %add%1;%mult%%EMMh%;%add%%amm%;-1%/add%%/mult%%/add%",
+    "name": "Harden",
+    "help": "Increases hardness of an object",
+    "school": "Transmutation 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Target gets a mind save or the caster gets a +%amm% to a specific type of social skill checks against the target",
+    "name": "Influence",
+    "help": "Makes a target more susceptible to your social influence",
+    "school": "Enchantment 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Create an illusion of a simple light source that produces %l0%5 ft of bright light and 10 feet of dim light%/l0%%l+%10 ft of bright light and 20 feet of dim light%/l+%. Shape and type of light is chosen at the time of casting. For each additional purchase of the Light keyword either increase its size, its complexity or increase/decrease the light level by 1 step",
+    "name": "Light",
+    "help": "Creates a light source",
+    "school": "Illusion 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "You can manipulate an object within range, interacting with it as if you were manipulating it and even move it if it weighs less than 5lbs and takes up less than a 5ft area. If Manipulate is purchased a second time both limits are increased to %mult%5;%lvlm%;%EMM%%/mult%",
+    "name": "Manipulate",
+    "help": "Manipulates an object",
+    "school": "Transmutation 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 1
+  },
+  {
+    "description": "Gives the Inspired %amm% condition to a single Adventurer or Utility skill check to the chosen target",
+    "name": "Predict",
+    "help": "Gives a bonus to a single skill check",
+    "school": "Divination 0",
+    "level": 0,
+    "cost": "1;ptt:2",
+    "unique": false,
+    "duration": 11
+  },
+  {
+    "description": "Repairs a targeted object, restoring %mult%%l0%2%/l0%%l+%%quad%0,25;0,5;%el%1;2%/el%,14%/quad%%/l+%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%%el%1;2%/el%%/l+%;%lvlm%%/mult% hp to it. Can't heal an object above Broken condition unless cast at level 1 or higher, and can't go above Destroyed unless cast at level 3 or higher",
+    "name": "Repair",
+    "help": "Repairs an object",
+    "school": "Transmutation 0",
+    "level": 0,
+    "cost": "0;lvl:2",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Allows you to search for a specific object, material, etc. within the range of the spell. If it is targeted, you target a specific spot or object to search. If it has an area, you search the area. If the item is within the targeted area, you get confirmation of that, but do not know the exact location, until you spend an additional round Sustaining the spell. If you mantain for a 3rd round, you are also told the strength or ammount of what you are searching for. The tier of material you can search for is equal to the spell's level",
+    "name": "Search",
+    "help": "Searches for a specific object",
+    "school": "Divination 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": -5
+  },
+  {
+    "description": "Gives the target a save (Enchantment and Illusion give Mind, Necromancy Body) or gain the Shaken condition. Shaken is a Tier 1 condition that is a fear effect that causes a character to tremble in fear and have Hampered 2 (AC,CMD)",
+    "name": "Shaken",
+    "help": "Gives the target Shaken condition",
+    "school": "Enchantment 0;Illsuion 1;Necromancy 0",
+    "level": 0,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Creates an intangible visual illusion that must be within a 5 foot cube size (unless one of the words modifies the target area). The illusion can be anything that the caster can imagine and may have simple movements and even mimic taking actions as appropriate. This illusion can move as directed by the caster as long as they are sustaining the spell. Complexity of actions and movements increases with spell level. Creatures that interact with the illusion get a Mind Save to realise it is one. This illusion can have additional aspects based on other illusion keywords added to the spell",
+    "name": "Shimmer",
+    "help": "Creates an illusion",
+    "school": "Illusion 0",
+    "level": 0,
+    "cost": "2",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Gives the target a save (Illusion give Mind, Conjuration and Necromancy Body) or gain the Sickened condition. Sickened is a Tier 1 condition that causes a character to feel ill and have Active Reduction 1 (Attack and Skill checks) and Weakend 2 (Damage)",
+    "name": "Sicken",
+    "help": "Gives the target Sicken condition",
+    "school": "Conjuration 1;Illusion 0;Necromancy 0",
+    "level": 0,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Creates an illusion of a simple sound which happens instantly and can be heard by those adjacent to the target location of the sound. You may purchase Sound keyword additional times to increase complexity and loudness of sound",
+    "name": "Sound",
+    "help": "Creates sound",
+    "school": "Illusion 0",
+    "level": 0,
+    "cost": "1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Targeted object's hardness decreases by %add%1;%mult%%EMMh%;%add%%amm%;-1%/add%%/mult%%/add%",
+    "name": "Weaken",
+    "help": "Decreases hardness of an object",
+    "school": "Transmutation 0",
+    "level": 0,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "The caster targets an object or creature, or an area (if using an AoE keyword), and sets a trigger of their choice to set off an alarm. This alarm can be a mental alarm sent to the caster or an auditory alarm of their choice when the trigger happens",
+    "name": "Alarm",
+    "help": "Alarms the caster",
+    "school": "Divination 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 5
+  },
+  {
+    "description": "Convers a dead creature into an undead under your control. When targetting a corpse you receive a number of bone or soul points equal to 8 x the CR of the creature to raise an undead. These points may be used to raise an undead, with the cost of the undead equaling its CR x 8; however you can only raise an undead whose Grade and CR is appropriate for a single summon, as if you were using the Summon Creature keyword. You cannot raise an undead above this Grade or CR. In combat the duration is decreased by 3 steps. The bone and soul points may be stored when harvested within a receptacle. If stored, their duration is doubled. A receptacle that is Broken loses half of it's points, a destroyed receptacle loses all of them",
+    "name": "Animated Dead",
+    "help": "Animates a corpse as an undead",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "1;lvl:1",
+    "unique": true,
+    "duration": 5 
+  },
+  {
+    "description": "Target gains +1 to Initiative. If Anticipate is purchased additional times increase the bonus by %EMMh% each time",
+    "name": "Anticipate",
+    "help": "Gives bonus to Initiative",
+    "school": "Divination 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 10
+  },
+  {
+    "description": "Changes the cosmetic appearance of the target",
+    "name": "Appearance",
+    "help": "Change cosmetic appearance",
+    "school": "Illusion 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "Creates basic structures with nearby materials. You can build a structure with an area of %mult%%EMM%;%amm%;5%/mult% feet. Higher spell level increases complexity",
+    "name": "Build",
+    "help": "Creates structures",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 3
+  },
+  {
+    "description": "Attempts to Bullrush the target using the Caster Skill in place of the Martial Skill",
+    "name": "Bullrush",
+    "help": "Use magic to push people",
+    "school": "Conjuration 1;Transmutation 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Changes target creature's physical form to an appropriate animal decided when the spell is cast that is within %lvl% size category of the target for the duration of the spell. Target gains all the physical attributes and abilities of the chosen creature and may gain supernatural abilities as approved by the GM. They also gain a quarter of the animals hit point pool as temp hp. If the target reaches 0 hp or lower, they immediately change back",
+    "name": "Change Form",
+    "help": "Transform a target into another form",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "0;lvl:1",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "Gives the target a climb speed equal to their base land speed. For each additional time Climb is purchased it lowers the climb DC by 1 step",
+    "name": "Climb",
+    "help": "Gives Climb speed",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3;alt:1",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "Target must make a Mind Save or be compelled to take a single action on their next turn. The Command must be simple in nature ('Attack them','Drop Weapons','Kneel', etc.)",
+    "name": "Command",
+    "help": "Compells target to do an action",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "Target must make a Mind Save or react more favorably or more hostile to the current situation for the duration of this spell, treating the target as %amm% step(s) more hostile or friendly",
+    "name": "Compel",
+    "help": "Compells the target to act differently",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "The target can understand %amm% written or spoken (choose one) language(s) for the duration of the spell",
+    "name": "Comprehend",
+    "help": "Gives knowledge of a language",
+    "school": "Divination 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 13
+  },
+  {
+    "description": "Conjure a basic set of armor or shield designed with the armor rules. Each additional purchase of Conjure Armor increases the quality by 1 step",
+    "name": "Conjure Armor",
+    "help": "Creates Armor",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 3
+  },
+  {
+    "description": "Conjure a mundane tool. Each additional purchase of Conjure Tool increases the quality by 1 step",
+    "name": "Conjure Tool",
+    "help": "Creates Tools",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "3",
+    "unique": false,
+    "duration": 5
+  },
+  {
+    "description": "Conjure a basic weapon that deals %eld% damage. Each additional purchse of Conjure Weapon increases the quality by 1 step",
+    "name": "Conjure Weapon",
+    "help": "Creates Weapon",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Temporarily take control of an undead that was created with a spell level equal to or less than this spell level for the duration of the spell",
+    "name": "Control Undead",
+    "help": "Temporarily control undead",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "You curse on of the following attributes for the duration of the spell: AC, CMD, single Skill, single Save; giving a -%amm% penalty",
+    "name": "Curse",
+    "help": "Change cosmetic appearance",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 4
+  },
+  {
+    "description": "Gives the target a body save or gain the Defeated condition. Defeated is a Tier 3 condition that represents a character being in a state where they are no longer in fighting shape. The character has their movement halved, and whenever they take a basic action, the character takes a point of damage that cannot be resisted",
+    "name": "Defeated",
+    "help": "Gives the target Defeated condition",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Changes the cosmetic appearance of the target",
+    "name": "Appearance",
+    "help": "Change cosmetic appearance",
+    "school": "Illusion 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "Attempts to suppress (or dispel if purchased twice) the target magic effect of equal spell level or lower for the duration of this effect by making an Abjuration check with a DC of 10 plus 4 per effective spell level plus the sources EMM. For every spell level above the target effect increase the bonus to the check by %EMM%. If the target effect is permanent or part of a magic item, this spell must be 2 levels higher than the target to attempt to dispel",
+    "name": "Dispel",
+    "help": "Supresses a magic effect",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Choose either Hot or Cold climate and treat its effects as %amm% step(s) more favorable",
+    "name": "Endure",
+    "help": "Lets the target endure hot/cold climat",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 4
+  },
+  {
+    "description": "Target weapon increases the damage die track by %amm% step(s)",
+    "name": "Enhance",
+    "help": "Increases weapon's damage",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gains a +2 bonus to a single skill from the following list (Acrobatics, Climb, Swim, Fly, Ride). Each additional Enhance Action purchased increases the bonus by %EMM%",
+    "name": "Enhance Action",
+    "help": "Gives a bonus to a single skill",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": 3
+  },
+  {
+    "description": "Increase the speed of a single movement type target possesses by %mult%10;%amm%%/mult% feet. This doesn't change the base speed of the movement",
+    "name": "Enhance Movement",
+    "help": "Increases speed",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Gives the target a body save or gain the Entangled condition. Entangled is a Tier 1 condition that inhibits the character's physical movement. The character has Unbalanced 2 (Attacks). Entangled can be removed with a Strength or Escape Artist check with the DC of the spell",
+    "name": "Entangle",
+    "help": "Gives the target Entangled condition",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Increase the size of the target by %amm% step(s)",
+    "name": "Enlarge",
+    "help": "Increases target's size",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Target gains fast healing %mult%%EMM%;%amm%%/mult%",
+    "name": "Fast Healing",
+    "help": "Gives Fast Healing",
+    "school": "Restoration 1",
+    "level": 1,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": 1
+  },
+  {
+    "description": "The target no longer falls, but floats ignoring falling damage. If you take Fly keyword additional times you increase target's flight abilities, scaling as per the fly rules",
+    "name": "Fly",
+    "help": "Makes the target floatier and lets them fly",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "2;ptt:1",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "The next time the target object is used in a skill check or activating an ability, it fails. If object is wielded when the spell is cast the wielder gets a Body save to negate this effect",
+    "name": "Hamper",
+    "help": "Hampers item's usability",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "The target object is held shut for the duration of the spell, giving a Body save to the wielder (if any). The DC to open the object is equal to the spell save DC",
+    "name": "Hold",
+    "help": "Holds object shut",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "The target must make a Body save or take %mult%1;%amm%%/mult%0% more damage from the next %add%%lvl%;1%/add% attacks. If an energy keyword is purchased, the additional damage is taken as that energy type instead of the damage type of the triggering attack",
+    "name": "Impacting",
+    "help": "Makes the target take more damage",
+    "school": "Destruction 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 1
+  },
+  {
+    "description": "Conjures a disease with tier of up to the level of the spell that they have knowledge of and apply it to the target as appropriate. The target receives a save based on the disease. This effect has no duration other than the duration of the disease, unless it is applied in an indirect way, then it has base duration of 1 round. Cost of the Infection keyword is increased by the disease's tier",
+    "name": "Infection",
+    "help": "Creates a disease",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": -3
+  },
+  {
+    "description": "Target's weapon counts as a type of material or alignment for the duration of the spell, such as evil, for the purposes of bypassing DR. Each additional purchase of Infuse increases the tier of material or the level of the alignment by 1",
+    "name": "Infuse",
+    "help": "Temporarily change target's weapon material or type",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gains Limber %amm% (AC,CMD)",
+    "name": "Inspire (Limber)",
+    "help": "Gives a bonus to the target",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gains Steady %amm% (Attacks)",
+    "name": "Inspire (Steady)",
+    "help": "Gives a bonus to the target",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gains Strengthen %amm% (Damage)",
+    "name": "Inspire (Strengthen)",
+    "help": "Gives a bonus to the target",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "The target can make a skill check or ability check as an immediate action",
+    "name": "Instant Action",
+    "help": "Target can instantly do a check",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "The target becomes invisible for the duration of the spell. Performing a hostile action breaks invisibility",
+    "name": "Invisibility",
+    "help": "Makes the target invisible",
+    "school": "Illusion 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "The target is healed for %add%10;-5;%mult%5;%amm%%/mult%;%mult%5;%lvl%%/mult%%/add%% of all damage done within the area for the duration of the effect (requires AoE modifier)",
+    "name": "Leech",
+    "help": "Allows the target to heal when anyone takes damage within the area",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 1
+  },
+  {
+    "description": "Increases the target's reach by %mult%5;%lvl%%/mult%ft",
+    "name": "Lengthen Limb",
+    "help": "Increases reach",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 11
+  },
+  {
+    "description": "You form a link with a target within range, either taking a %min%%mult%25;%amm%%/mult%;100%/min%% of any damage and any conditions they suffer from during the link or take %mult%5;%amm%;%lvl%%/mult% damage that they have suffered from to yourself and restoring it to them at the start of each of your turns. Target must remain within range of the spell for the effects to apply. If they leave the effects stop until they re-enter the range",
+    "name": "Link (Restoration)",
+    "help": "You take target's damage",
+    "school": "Restoration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "You form a link between two targets within range, deciding which direction the link flows with one target either taking a %min%%mult%25;%amm%%/mult%;100%/min%% of any damage and any conditions the other target suffers from during the link or taking %mult%5;%amm%;%lvl%%/mult% damage that the other target has suffered from to them and restoring it to the other target at the start of each of their turns. Target must remain within range of the spell for the effects to apply. If they leave the effects stop until they re-enter the range. Unwilling targets receive a Body save",
+    "name": "Link (Necromancy)",
+    "help": "One target suffers another target's damage",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Conjure magical armor that has %add%%EMM%;-%EMMh%;%mult%%EMMh%;%amm%%/mult%%/add% ACB. This armor has no ACP, Spell Failure or minimum DEX, but does count as worn armor for restriction such as Monk AC",
+    "name": "Magic Armor",
+    "help": "Creates Magic Armor",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 3
+  },
+  {
+    "description": "Change the markings on the palm sized object as the caster wishes. Additional purchases of Manipulate Markings increase object size. Wielded objects give the wielder a Body save",
+    "name": "Manipulate Markings",
+    "help": "Changes markings",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 4
+  },
+  {
+    "description": "The target instantly memorizes a page worth (or more) of information depending on its complexity. Additional purchases of Memorize increase the ammount of information",
+    "name": "Memorize",
+    "help": "Instantly memorize information",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 0
+  },
+  {
+    "description": "Target makes a Mind save or forgets what happened during a single event, scene or situation, amount of time depending on spell level. After the end of the duration the target does not regain this memory, but gets a save each time something would trigger it to be recalled",
+    "name": "Memory Lapse",
+    "help": "Makes the target forget",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "Creates %mult%%lvl%;%amm%%/mult% illusory doubles of the target. When the target of the spell is targetted with an attack roll a die equal to the number of images + 1. Any result other than a 1 hits and destroys one of the doubles",
+    "name": "Mirror Image",
+    "help": "Creates illusiory doubles",
+    "school": "Illusion 1",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Target gains a natural weapon of your choice",
+    "name": "Natural Weapon",
+    "help": "Target gains natural weapon",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 3
+  },
+  {
+    "description": "Deals %mult%%quad%0,25;0,5;1,14;%lvl%%/quad%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%lvlm%%/mult% of negative damage. This damage type heals undead creatures and damages living ones",
+    "name": "Negative Energy",
+    "help": "Deals negative energy damage",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Deals %mult%%quad%0,25;0,5;1,14;%lvl%%/quad%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%lvlm%%/mult% of positive damage. This damage type heals living creatures and damages undead ones",
+    "name": "Positive Energy",
+    "help": "Deals positive energy damage",
+    "school": "Restoration 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Target gets a Mind save or gains Hampered %amm% (AC,CMD)",
+    "name": "Penalty (Hampered)",
+    "help": "Gives a penalty to the target",
+    "school": "Enchantment 1; Necromancy 2",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gets a Mind save or gains Unbalanced %amm% (Attacks)",
+    "name": "Penalty (Unbalanced)",
+    "help": "Gives a penalty to the target",
+    "school": "Enchantment 1; Necromancy 2",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Target gets a Mind save or gains Weakened %amm% (Damage)",
+    "name": "Penalty (Weakened)",
+    "help": "Gives a penalty to the target",
+    "school": "Enchantment 1; Necromancy 2",
+    "level": 1,
+    "cost": "1;insp:0",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Creates a pocket of extradimensional space that can be attached to another object and moved. This pocket can hold %mult%5;%pow%%EMM%;%add%%amm%;-1%/add%%/pow%%/mult% cubic feet of material",
+    "name": "Pocket",
+    "help": "Creates a pocket extradimensional space",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 4
+  },
+  {
+    "description": "Gives the target a save (Illusion give Mind, Conjuration Body) or gain the Prone condition. Prone is a Tier 2 condition that causes a character to fall on the ground and have Hampered 4 (AC,CMD) and Unbalanced 4 (Attacks). Prone target do not gain hampered against ranged attack that are further than 5ft. away, and ranged attacks have disadvantage against prone targets",
+    "name": "Prone",
+    "help": "Gives the target Prone condition",
+    "school": "Conjuration 1;Illusion 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Gives the target a reroll on a save of an ongoing condition they are currently being affected by",
+    "name": "Reroll",
+    "help": "Gives the target a reroll",
+    "school": "Restoration 1",
+    "level": 1,
+    "cost": "3",
+    "unique": true,
+    "duration": 0
+  },
+  {
+    "description": "Target gains %mult%%add%%EMM%;%lvl%%/add%%/mult% %eld% resistance (requires an elemental keyword)",
+    "name": "Resistance",
+    "help": "Gives elemental resistance",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Gives the target a save (Enchantment gives Mind, Necromancy gives Soul, Transmutation gives Body) or sap a single attribute of the appropriate group, lowering it by %add%1;%lvl%%/add% for the encounter",
+    "name": "Sapping",
+    "help": "Saps attributes",
+    "school": "Enchantment 1; Necromancy 2; Transmutation 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": -3
+  },
+  {
+    "description": "Deals %mult%%l0%2%/l0%%l+%%quad%0,25;0,5;%el%1;2%/el%,14;%lvl%%/quad%%/l+%;%dbm%%/mult%%d%d8%/d% + %mult%%EMM%;%l0%1%/l0%%l+%%el%1;2%/el%%/l+%;%lvlm%%/mult% of %eld% damage to objects ignoring %mult%%EMM%;%amm%%/mult% hardness. If the amount of hardness ignored is greater than the hardness of the object, the difference is added as damage per dice. Attended objects receive a body save",
+    "name": "Shatter",
+    "help": "Deals damage to objects",
+    "school": "Destruction 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 0
+  },
+  {
+    "description": "Creates a magic shield that can be raised as a free reaction %lvl% times per round against an attack and provides %EMMh% AC. Each additional purchase of Shield keyword either increases the number of times it can be raised by 1 or the AC it provides by %EMMh%. This AC bonus is a shield bonus that does not provide DR or stack with shields, but does not count as armor for abilities like Monk AC",
+    "name": "Shield",
+    "help": "Creates Magic Shield",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1;ptt:1",
+    "unique": false,
+    "duration": 12
+  },
+  {
+    "description": "Decrease the size of the target by %amm% step(s)",
+    "name": "Shrink",
+    "help": "Decreases target's size",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "3",
+    "unique": false,
+    "duration": 2
+  },
+  {
+    "description": "Gives the target a Mind save or gain the Unconscious condition for the duration of the spell as long as half their highest skill rank bonus is equal to or lower than the level of the spell. Unconscious is a Tier 4 condition that renders a character unable to act or perceive. The character can take no actions and is Helpless. Helpless is a Tier 4 condition that makes a character unable to defend themselves and makes them valid target for coup de grace",
+    "name": "Sleep",
+    "help": "Gives the target Unconscious condition",
+    "school": "Enchantment 1",
+    "level": 1,
+    "cost": "2",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Gives the target a Body save or gain the Staggered condition. Staggered is a Tier 2 condition that inhibits a character's ability to act. The character may only take one basic action while staggered, not both",
+    "name": "Stagger",
+    "help": "Gives the target Staggered condition",
+    "school": "Necromancy 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 1
+  },
+  {
+    "description": "Summon a single creature with a Grade equal to or lower than your rank in Conjuration skill with CR no higher than 0.5 alternatively, you can summon 1d4 creatures using the same rules, except CR can be no higher than 0.25 (if spell's level is higher than 1 multiply both CRs by %mult%%add%%srb%;-2%/add%;%add%%lvl%;-1%/add%%/mult%). During combat duration is 3 steps lower",
+    "name": "Summon Creature",
+    "help": "Summons creatures",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "1;lvl:1",
+    "unique": true,
+    "duration": 5
+  },
+  {
+    "description": "A target is treated as if it ate a %amm% meal(s) or %amm%/4th of days' worth of water. This can only provide water in terrains that have an excess amount of water",
+    "name": "Sustenance",
+    "help": "Gives sustenance to a creature",
+    "school": "Restoration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 0
+  },
+  {
+    "description": "Gives the target a swim speed equal to their base land speed. Each additional purchase of Swim keyword lets the target treat the current as one step lower",
+    "name": "Swim",
+    "help": "Gives Swim speed",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 3
+  },
+  {
+    "description": "The target teleports up to %add%10;%mult%5;%EMM%;%amm%%/mult%;-%mult%5;%EMM%%/mult%%/add% feet to an unoccupied square chosen by the caster. This movement does not provoke. If you can target multiple creatures, the maximum number of additional creatures that may be affected is %lvl%, regardless of other keywords",
+    "name": "Teleport",
+    "help": "Teleport the target",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 0
+  },
+  {
+    "description": "Modify the target area of terrain (minimum 1 square), adding or removing a form of difficult terrain",
+    "name": "Terrain",
+    "help": "Changes terrain",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 2
+  },
+  {
+    "description": "Conjures a poison with tier of up to the level of the spell that they have knowledge of and apply it to the target as appropriate. The target receives a save based on the poison. This effect has no duration other than the duration of the poison, unless it is applied in an indirect way, then it has base duration of 1 round. Cost of the Toxins keyword is increased by the poison's tier",
+    "name": "Toxins",
+    "help": "Creates a toxin",
+    "school": "Conjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": -3
+  },
+  {
+    "description": "Wards the target to alert you if a chosen condition is met",
+    "name": "Ward",
+    "help": "Ward the target",
+    "school": "Abjuration 1",
+    "level": 1,
+    "cost": "1",
+    "unique": true,
+    "duration": 4
+  },
+  {
+    "description": "Either increase or decrease the target's weight by %mult%25;%amm%%/mult%%",
+    "name": "Weight",
+    "help": "Change target's weight",
+    "school": "Transmutation 1",
+    "level": 1,
+    "cost": "2",
+    "unique": false,
+    "duration": 3
   }
 ]

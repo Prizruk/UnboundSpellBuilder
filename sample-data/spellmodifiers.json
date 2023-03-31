@@ -61,5 +61,113 @@
   "cost": "1",
   "unique": true,
   "modifiers": "target: 9"
+},
+{
+  "name": "Basic Energy",
+  "help": "Any effects the spell manifests can be based on one of the four elements",
+  "school": "Universal",
+  "level": 0,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "none: 0"
+},
+{
+  "name": "Arc",
+  "help": "Spell arcs to other targets",
+  "school": "Destruction 1",
+  "level": 1,
+  "cost": "1;ptt:1",
+  "unique": false,
+  "modifiers": "description: If spell hits the targets or the targets fails the save, the spell arcs to %add%1;%lvl%%/add% additional targets adjacent to the initial targets, automatically hitting and applying the arcing effect. The new targets take %min%%mult%25;%amm%%/mult%;100%/min%% of the triggering spells damage"
+},
+{
+  "name": "Blast",
+  "help": "The spell now affects a blast within range",
+  "school": "Universal",
+  "level": 1,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "target: 2; damagesize: -1"
+},
+{
+  "name": "Cone",
+  "help": "The spell now affects a cone within range",
+  "school": "Universal",
+  "level": 1,
+  "cost": "1",
+  "unique": true,
+  "modifiers": "target: 1; damagesize: -1"
+},
+{
+  "name": "Dimensions",
+  "help": "Increases the size of an AoE",
+  "school":"Universal",
+  "level": 1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"none: 0"
+},
+{
+  "name":"Duplicate",
+  "help":"Duplicates the spell effect",
+  "school":"Universal",
+  "level":1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"description: Each purchase of Duplicate creates either additional instance of an AoE effect or Multi Target or creates another application of the spell on each target"
+},
+{
+  "name":"Leech",
+  "help":"Restore a portion of damage dealt",
+  "school":"Necromancy 1",
+  "level":1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"description: Any damage dealt by this spell restores hitpoints of a target within range of this spell equal to %min%%mult%50;%amm%%/mult%;100%/min%% of the damage dealt. If the spell affects an area, the healing may be distributed among any number of valid targets within range."
+},
+{
+  "name":"Material",
+  "help":"Conjured objects are made of specific material",
+  "school":"Conjuration 1",
+  "level":1,
+  "cost":"1",
+  "unique":true,
+  "modifiers":"description: Any conjured tools, armor and weapons can be made from a special material. Material Tier is equal or less than spell level"
+},
+{
+  "name":"Necrotic",
+  "help":"Gives access to necrotic energy type",
+  "school":"Necromancy 1",
+  "level":1,
+  "cost":"1",
+  "unique":true,
+  "modifiers":"none: 0"
+},
+{
+  "name":"Phantasm",
+  "help":"Makes illusions more real",
+  "school":"Illusion",
+  "level":1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"description: The illusion counts as %min%%mult%25;%amm%%/mult%100%/min%% 'real', allowing it to interact with the environment and potentially deal damage"
+},
+{
+  "name":"Reach",
+  "help":"Gives a spell increased melee reach",
+  "school":"Universal",
+  "level":1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"range: 1"
+},
+{
+  "name":"Trigger",
+  "help":"Spell goes off on a triggered condition",
+  "school":"Universal",
+  "level":1,
+  "cost":"1",
+  "unique":false,
+  "modifiers":"description: The spell doesn't go off until it is triggered by a set condition or by a mental command. The spell lasts for 1 minute or until triggered. Spell Failure chance does not apply to the trigger spells until the moment they are triggered, and is based on the casters failure chance at the moment"
 }
 ]
