@@ -2,6 +2,7 @@
 @using static UnboundSpellBuilder.Pages.SpellClasses
 @inject HttpClient Http
 
+
 <PageTitle>Spell Builder</PageTitle>
 
 @{
@@ -254,11 +255,9 @@
     public int THMvalue { get; set;} = 10;
     public int EMMB{ get; set;} = 0;
     public int skillBonus{get;set;} = 0;
-
-
     protected override async Task OnInitializedAsync()
     {
-        showMode = 0;
+        showMode = 0;        
         EffectKeyword[]? tempEffects = await Http.GetFromJsonAsync<EffectKeyword[]>("sample-data/effects.json");
         effects = new List<EffectKeyword>(tempEffects);
         SpellModifier[]? tempSpellMods = await Http.GetFromJsonAsync<SpellModifier[]>("sample-data/spellmodifiers.json");
@@ -863,7 +862,7 @@
         foreach(EffectKeyword effect in spell.effects)
         {
             spell.pointcost += effect.GetCost(effect.ammount,true,spell.level);
-            spell.effect.Add(effect.description.Replace("%amm%",effect.ammount.ToString()));
+            spell.effect.Add(effect.description.Replace("%amm%",effect.ammount.ToString()).Replace(",","."));
         }
         spell.effect.Add(bonusEffect);
         if (hasDestructive && spell.school == "Destruction") spell.damBonus++;
