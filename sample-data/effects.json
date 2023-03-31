@@ -988,5 +988,25 @@
     "cost": "2",
     "unique": false,
     "duration": 3
+  },
+  {
+    "description": "Target gains and additional stage 2 iterative attack durion all-out attack. For each additional purchase of Accelerating target gets an additional iterative attack of the next stage",
+    "name": "Accelerating",
+    "help": "Gives additional attacks",
+    "school": "Transmutation 2",
+    "level": 2,
+    "cost": "2",
+    "unique": false,
+    "duration": 1
+  },
+  {
+    "description": "Choose a single skill check, the target has Advantage the next time they roll that skill check within the duration",
+    "name": "Advantage",
+    "help": "Change target's weight",
+    "school": "Divination 2;Enchantment 2",
+    "level": 2,
+    "cost": "3",
+    "unique": true,
+    "duration": 1
   }
 ]
