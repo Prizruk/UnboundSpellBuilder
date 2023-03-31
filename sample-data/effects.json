@@ -998,5 +998,15 @@
     "cost": "2",
     "unique": false,
     "duration": 1
+  },
+  {
+    "description": "Medium or smaller target makes a body save or becomes anchored to the square they are in, unable to move from that space. If they attempt to move, they receive another save to do so. Each additional purchase of Anchor keyword increases the size of the target that can be affected by 1 step",
+    "name": "Anchor",
+    "help": "",
+    "school": "Conjuration 2",
+    "level": 2,
+    "cost": "2",
+    "unique": false,
+    "duration": 2
   }
 ]
