@@ -169,7 +169,7 @@
                                 <tr>
                                     <td><Tooltip Text="Your MAG value, not mod">MAG:</Tooltip></td><td><input style="width: 25%;" type="number" name="MAG" min="0" max="99" @bind="@MAGvalue" @oninput="@((e) => {UpdateParams((string)e.Value,1);})"></td>
                                 </tr>
-                                <tr>
+                                <tr style="display:none">
                                     <td><Tooltip Text="Your THM value, not mod">THM:</Tooltip></td><td><input style="width: 25%;" type="number" name="THM" min="0" max="99" @bind="@THMvalue" @oninput="@((e) => {UpdateParams((string)e.Value,2);})"></td>
                                 </tr>
                                 <tr><td><Tooltip Text="Appropriate magic skill proficiency">Skill:</Tooltip></td>
